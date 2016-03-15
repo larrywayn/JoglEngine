@@ -55,9 +55,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         // Associate Vertex attribute 1 with the last bound VBO
         // gl.glVertexAttribPointer(1,3,GL4.GL_INT, false, 0, 0 );
         LarryEngineKern.gabEsFehler("Display A",gl, glu);
-        IntBuffer intBuffer = Buffers.newDirectIntBuffer(1);
-        gl.glGenVertexArrays(1, intBuffer);
-        int iVao = intBuffer.get(0);
+
 
         gl.glEnableVertexAttribArray(0);
 
@@ -66,7 +64,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         gl.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 0, 0);
 
         // ***************The render routine*****************
-        gl.glBindVertexArray(iVao);
+
         gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, line.holIndizies());
 
         Quaternion invertView = mapper.convertValue(kamera.holAusrichtung(), Quaternion.class);
@@ -74,7 +72,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         Vektor4 invertStandort = mapper.convertValue(kamera.holStandort(), Vektor4.class);
 
         gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "projMat")), 1, false, kamera.holPerspektive(), 0);
-        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "tmpMat")), 1, false, kamera.holPerspektive(), 0);
+        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "tmpMat")), 1, false, new float[]{0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f}, 0);
         gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "viewQuat")), 1, invertView.alsArray(), 0);
         gl.glUniform3fv((gl.glGetUniformLocation(sb.holProgram(), "viewPos")), 1, invertStandort.alsArray(), 0);
         gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "modelQuat")), 1, new Quaternion(0f,0f,0f,1.0f).alsArray(), 0);
@@ -140,7 +138,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     }
 
     public static void gabEsFehler(String wo, GL4 gl, GLU glu){
-        int err = GL_NO_ERROR;
+        int err;
         while ((err = gl.glGetError()) != GL_NO_ERROR) {
             System.out.println(wo+" # "+err+": "+glu.gluErrorString(err));
         }

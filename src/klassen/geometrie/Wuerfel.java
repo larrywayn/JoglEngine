@@ -35,9 +35,7 @@ public class Wuerfel extends Geometrie {
 		this.vertices = vboHandles[0];
 		this.uvs = vboHandles[1];
 		this.indicies = vboHandles[2];
-		vboHandles = null;
-		
-		this.erzeugeBuffer(this.verticesPlain);
+
 		LarryEngineKern.createBuffer(gl, this.vertices, this.erzeugeBuffer(this.verticesPlain));
 		LarryEngineKern.createBuffer(gl, this.uvs, this.erzeugeBuffer(this.uvsPlain));
 		LarryEngineKern.createBuffer(gl, this.indicies, this.erzeugeBuffer(this.indiciesPlain));

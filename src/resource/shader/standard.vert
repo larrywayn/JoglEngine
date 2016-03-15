@@ -25,6 +25,6 @@ vec3 vecMult(vec4 q, vec3 v){
 
 void main(void) {
     vec4 worldModelQuat = quatMult(viewQuat , modelQuat);
-    gl_Position = projMat * tmpMat * vec4( position, 1.0);
+    gl_Position = projMat  *  tmpMat * vec4(modelPos,1.0) * vec4(position, 1.0);
     //gl_Position  = projMat * vec4(viewPos,1.0) * vec4(vecMult(viewQuat ,modelPos),1.0) * vec4(vecMult(worldModelQuat  , position), 1.0);
 }
