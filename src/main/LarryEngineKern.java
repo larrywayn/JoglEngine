@@ -12,9 +12,12 @@ import klassen.Quaternion;
 import klassen.ShaderBlock;
 import klassen.Vektor4;
 import klassen.geometrie.Wuerfel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import static com.jogamp.opengl.GL4.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -30,7 +33,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     private Kamera kamera;
     private int width;
     private int height;
-    private ObjectMapper mapper;
 
     public LarryEngineKern() {
         super();
@@ -39,57 +41,56 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        LarryEngineKern.gabEsFehler("Display 0", gl, glu);
         gl = drawable.getGL().getGL4();
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         gl.glUseProgram(sb.holProgram());
 
-        // gl.glEnableVertexAttribArray(0);
-
-        // Select the VBO, GPU memory data, to use for colors
-        // gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, line.holVertices());
-        // gl.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 0, 0);
-
-        // gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, line.holIndizies());
-        // //the vertex data
-        // Associate Vertex attribute 1 with the last bound VBO
-        // gl.glVertexAttribPointer(1,3,GL4.GL_INT, false, 0, 0 );
-        LarryEngineKern.gabEsFehler("Display A",gl, glu);
-
-
         gl.glEnableVertexAttribArray(0);
-
-        // Select the VBO, GPU memory data, to use for colors
         gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, line.holVertices());
         gl.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 0, 0);
-
-        // ***************The render routine*****************
-
+        gl.glEnableVertexAttribArray(1);
+        gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, line.holNormalen());
+        gl.glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 0, 0);
         gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, line.holIndizies());
 
-        Quaternion invertView = mapper.convertValue(kamera.holAusrichtung(), Quaternion.class);
-        invertView.invertiere();
-        Vektor4 invertStandort = mapper.convertValue(kamera.holStandort(), Vektor4.class);
+      //  Quaternion invertView = mapper.convertValue(kamera.holAusrichtung(), Quaternion.class);
+    //    invertView.invertiere();
+      //  Vektor4 invertStandort = mapper.convertValue(kamera.holStandort(), Vektor4.class);
+        Vektor4 modelPos = new Vektor4(-5.0f, -5.0f, -10.0f, 0.0f);
+        Quaternion q = new Quaternion(0.0f,0.0f,0.0f,0.0f);
+        float[] modelMat = q.erzeugeMatrix(modelPos);
+        /*q.ausgabe();
+        System.out.println(modelMat[0]+" # "+modelMat[1]+" # "+modelMat[2]+" # "+modelMat[3]);
+        System.out.println(modelMat[4]+" # "+modelMat[5]+" # "+modelMat[6]+" # "+modelMat[7]);
+        System.out.println(modelMat[8]+" # "+modelMat[9]+" # "+modelMat[10]+" # "+modelMat[11]);
+        System.out.println(modelMat[12]+" # "+modelMat[13]+" # "+modelMat[14]+" # "+modelMat[15]);
+        System.out.println("-----------------------------");*/
 
         gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "projMat")), 1, false, kamera.holPerspektive(), 0);
-        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "tmpMat")), 1, false, new float[]{0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f,0.0f, 0.0f, 0.0f, 0.0f}, 0);
-        gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "viewQuat")), 1, invertView.alsArray(), 0);
-        gl.glUniform3fv((gl.glGetUniformLocation(sb.holProgram(), "viewPos")), 1, invertStandort.alsArray(), 0);
-        gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "modelQuat")), 1, new Quaternion(0f,0f,0f,1.0f).alsArray(), 0);
-        gl.glUniform3fv((gl.glGetUniformLocation(sb.holProgram(), "modelPos")), 1, new Vektor4(0.0f, 0.0f, 0.0f, 0.0f).alsArray(), 0);
+        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "camMat")), 1, false, kamera.holMatrix(), 0);
+        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "modelMat")), 1, false, modelMat, 0);
 
-        LarryEngineKern.gabEsFehler("Display B",gl, glu);
-        gl.glDrawElements(GL4.GL_TRIANGLES, // mode
-                line.holIndiziesPlain().length, // count
-                GL4.GL_UNSIGNED_INT, // type
-                0 // element array buffer offset
-        );
+    //    kamera.holAusrichtung().ausgabe();
+     //   q.ausgabe();
+      //  System.out.println("-----------------------------");
+      //  gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "camQuat")), 1, kamera.holAusrichtung().alsArray(), 0);
+      //  gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "camPos")), 1, kamera.holStandort().alsArray(true), 0);
+       // gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "tmpMat")), 1, false, new float[]{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, 0);
+      //  gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "viewQuat")), 1, invertView.alsArray(), 0);
+      //  gl.glUniform3fv((gl.glGetUniformLocation(sb.holProgram(), "viewPos")), 1, invertStandort.alsArray(), 0);
+      //  gl.glUniform4fv((gl.glGetUniformLocation(sb.holProgram(), "modelQuat")), 1, new Quaternion(1.0f,1.0f,1.0f,1.0f).alsArray(), 0);
+      //  gl.glUniform3fv((gl.glGetUniformLocation(sb.holProgram(), "modelPos")), 1, new Vektor4(0.0f, 0.0f, 0.0f, 1.0f).alsArray(true), 0);
+
+        gl.glDrawElements(GL4.GL_TRIANGLES, line.holIndiziesPlain().length, GL4.GL_UNSIGNED_INT, 0);
+        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+        gl.glDisableVertexAttribArray(0);
+        gl.glDisableVertexAttribArray(1);
         LarryEngineKern.gabEsFehler("Display C",gl, glu);
     }
 
     @Override
     public void dispose(GLAutoDrawable arg0) {
-
     }
 
     @Override
@@ -97,19 +98,16 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         gl = drawable.getGL().getGL4();
         glu = new GLU();
         gl.glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-        //gl.glClearDepth(1.0f);
-        //gl.glEnable(GL_DEPTH_TEST);
-        //gl.glDepthFunc(GL_LEQUAL);
-       // gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
+        gl.glClearDepth(1.0f);
+        gl.glEnable(GL_DEPTH_TEST);
+        gl.glDepthFunc(GL_LEQUAL);
+        gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
         sb = new ShaderBlock("standard");
         this.width = drawable.getSurfaceWidth();
         this.height = drawable.getSurfaceHeight();
         kamera = new Kamera((this.width/this.height));
-        LarryEngineKern.gabEsFehler("INIT A",gl, glu);
         sb.erzeugeProgram(gl, true, true, false);
         line = new Wuerfel(gl);
-        LarryEngineKern.gabEsFehler("INIT B",gl, glu);
-        mapper = new ObjectMapper();
     }
 
     @Override
@@ -142,5 +140,12 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         while ((err = gl.glGetError()) != GL_NO_ERROR) {
             System.out.println(wo+" # "+err+": "+glu.gluErrorString(err));
         }
+    }
+
+    public static <T> T kopiereObject( T o ) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        new ObjectOutputStream( baos ).writeObject( o );
+        ByteArrayInputStream bais = new ByteArrayInputStream( baos.toByteArray() );
+        return (T) new ObjectInputStream(bais).readObject();
     }
 }
