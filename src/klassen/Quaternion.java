@@ -1,10 +1,8 @@
 package klassen;
 
-public class Quaternion extends Vektor4 {
-	protected float x;
-	protected float y;
-	protected float z;
-	protected float w;
+import java.io.Serializable;
+
+public class Quaternion extends Vektor4 implements Serializable {
 	protected float xSkalierung;
 	protected float ySkalierung;
 	protected float zSkalierung;
@@ -21,8 +19,7 @@ public class Quaternion extends Vektor4 {
 		this(0.0f, 0.0f, 0.0f, 0.0f, xSkalierung, ySkalierung, zSkalierung);
 	}
 
-	public Quaternion(float x, float y, float z, float w, float xSkalierung, float ySkalierung,
-			float zSkalierung) {
+	public Quaternion(float x, float y, float z, float w, float xSkalierung, float ySkalierung, float zSkalierung) {
 		super(x, y, z, w);
 		this.xSkalierung = xSkalierung;
 		this.ySkalierung = ySkalierung;
@@ -120,4 +117,38 @@ public class Quaternion extends Vektor4 {
 		this.y = -this.y;
 		this.z = -this.z;
 	}
+
+	public float[] erzeugeMatrix(Vektor4 vektor) {
+		float[] matrixArray = new float[16];
+		float xy = this.x * this.y;
+		float xz = this.x * this.z;
+		float xx = this.x * this.x;
+		float yy = this.y * this.y;
+		float yw = this.y * this.w;
+		float xw = this.x * this.w;
+		float zz = this.z * this.z;
+		float zw = this.z * this.w;
+		float zy = this.z * this.y;
+		matrixArray[0] = this.xSkalierung * (1.0f - (2.0f * (yy + zz)));
+		matrixArray[1] = this.xSkalierung * 2.0f * (xy - zw);
+		matrixArray[2] = this.xSkalierung * 2.0f * (xz + yw);
+		matrixArray[3] = 0.0f;
+		matrixArray[4] = this.ySkalierung * 2.0f * (xy + zw);
+		matrixArray[5] = this.ySkalierung * (1.0f - (2.0f * (xx + zz)));
+		matrixArray[6] = this.ySkalierung * 2.0f * (zy - xw);
+		matrixArray[7] = 0.0f;
+		matrixArray[8] = this.zSkalierung * 2.0f * (xz - yw);
+		matrixArray[9] = this.zSkalierung * 2.0f * (zy + xw);
+		matrixArray[10] = this.zSkalierung * (1.0f - (2.0f * (xx + yy)));
+		matrixArray[11] = 0.0f;
+		matrixArray[12] = vektor.holX();
+		matrixArray[13] = vektor.holY();
+		matrixArray[14] = vektor.holZ();
+		matrixArray[15] = 1.0f;
+		return matrixArray;
+	};
+
+	public void ausgabe() {
+		System.out.println("Q: " + (this.x) + " " + (this.y) + " " + (this.z) + " " + (this.w));
+	};
 }
