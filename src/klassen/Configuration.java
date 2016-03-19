@@ -2,9 +2,9 @@ package klassen;
 
 public class Configuration {
 	private final static String ShaderPfad = "src/resource/shader/";
-	private final static float Sichtfeld = 60.0f;
-	private final static float Near = 0.1f;
-	private final static float Far = 10000.0f;
+	private final static float Sichtfeld = 45.0f;
+	private final static float Near = 1.0f;
+	private final static float Far = 100000.0f;
     private final static String Titel = "MMO Game 1.0";
 
     protected Configuration() {
