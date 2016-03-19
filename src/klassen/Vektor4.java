@@ -2,7 +2,9 @@ package klassen;
 
 import grundklassen.Vektor;
 
-public class Vektor4 extends Vektor {
+import java.io.Serializable;
+
+public class Vektor4 extends Vektor implements Serializable {
 	protected float w;
 
 	public Vektor4() {
@@ -88,8 +90,8 @@ public class Vektor4 extends Vektor {
 		return new Vektor4(tmpX, tmpY, tmpZ, tmpW);
 	}
 
-	public float[] alsArray() {
-		return new float[] { this.x, this.y, this.z, this.w };
+	public float[] alsArray(boolean threeOrFour) {
+		if(threeOrFour){ return super.alsArray(); }else{ return new float[] { this.x, this.y, this.z, this.w }; }
 	}
 
 	public void invertiere() {
