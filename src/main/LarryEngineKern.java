@@ -7,10 +7,7 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
-import klassen.Kamera;
-import klassen.Quaternion;
-import klassen.ShaderBlock;
-import klassen.Vektor4;
+import klassen.*;
 import klassen.geometrie.Wuerfel;
 import static com.jogamp.opengl.GL4.*;
 
@@ -33,6 +30,8 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     private Kamera kamera;
     private int width;
     private int height;
+    private Steuerung steuerung;
+    private Spieler spieler;
 
     public LarryEngineKern() {
         super();
@@ -56,9 +55,9 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
       //  Quaternion invertView = mapper.convertValue(kamera.holAusrichtung(), Quaternion.class);
     //    invertView.invertiere();
       //  Vektor4 invertStandort = mapper.convertValue(kamera.holStandort(), Vektor4.class);
-        Vektor4 modelPos = new Vektor4(-5.0f, -5.0f, -10.0f, 0.0f);
-        Quaternion q = new Quaternion(0.0f,0.0f,0.0f,0.0f);
-        float[] modelMat = q.erzeugeMatrix(modelPos);
+        //Vektor4 modelPos = new Vektor4(-5.0f, -5.0f, -10.0f, 0.0f);
+       // Quaternion q = new Quaternion(0.0f,0.0f,0.0f,0.0f);
+        //float[] modelMat = q.erzeugeMatrix(modelPos);
         /*q.ausgabe();
         System.out.println(modelMat[0]+" # "+modelMat[1]+" # "+modelMat[2]+" # "+modelMat[3]);
         System.out.println(modelMat[4]+" # "+modelMat[5]+" # "+modelMat[6]+" # "+modelMat[7]);
@@ -68,7 +67,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
 
         gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "projMat")), 1, false, kamera.holPerspektive(), 0);
         gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "camMat")), 1, false, kamera.holMatrix(), 0);
-        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "modelMat")), 1, false, modelMat, 0);
+        gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "modelMat")), 1, false, spieler.holMatrix(), 0);
 
     //    kamera.holAusrichtung().ausgabe();
      //   q.ausgabe();
@@ -102,12 +101,15 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
         gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
-        sb = new ShaderBlock("standard");
+        this.sb = new ShaderBlock("standard");
         this.width = drawable.getSurfaceWidth();
         this.height = drawable.getSurfaceHeight();
-        kamera = new Kamera((this.width/this.height));
-        sb.erzeugeProgram(gl, true, true, false);
-        line = new Wuerfel(gl);
+        this.kamera = new Kamera((this.width/this.height));
+        this.spieler = new Spieler();
+        this.sb.erzeugeProgram(gl, true, true, false);
+        this.line = new Wuerfel(gl);
+        this.steuerung = new Steuerung(this.kamera, this.spieler);
+        this.addKeyListener(this.steuerung);
     }
 
     @Override

@@ -3,9 +3,6 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../jogl_lib/jar/gluegen-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/../jogl_lib/jar/jogl-all.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../jackson_lib/jackson-core-2.7.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../jackson_lib/jackson-databind-2.7.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../jackson_lib/jackson-annotations-2.7.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

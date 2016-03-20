@@ -35,4 +35,8 @@ public abstract class Vektor {
 	public void setzZ(float z){
 		this.z = z;
 	}
+
+	public float[] alsArray() {
+		return new float[] { this.x, this.y, this.z };
+	}
 }

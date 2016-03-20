@@ -71,10 +71,7 @@ public class Vektor4 extends Vektor implements Serializable {
 		w1 = (w1 > -EPSILON && w1 < EPSILON) ? 0.0f : fixNumber(w1);
 		float w2 = rechterVektor4.holW();
 		w2 = (w2 > -EPSILON && w2 < EPSILON) ? 0.0f : fixNumber(w2);
-		if (x1 == x2 && y1 == y2 && z1 == z2 && w1 == w2) {
-			return true;
-		}
-		return false;
+		return (x1 == x2 && y1 == y2 && z1 == z2 && w1 == w2);
 	}
 
 	public float skalarProduktV4(Vektor4 rechterVektor4) {
@@ -132,5 +129,9 @@ public class Vektor4 extends Vektor implements Serializable {
 			this.z *= len;
 			this.w *= len;
 		}
+	}
+
+	public void ausgabe() {
+		System.out.println("V4: " + (this.x) + " " + (this.y) + " " + (this.z) + " " + (this.w));
 	}
 }

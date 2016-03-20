@@ -1,15 +1,13 @@
 #version 400
 
-uniform vec3 abc;
 uniform mat4 projMat;
-uniform mat4 tmpMat;
-uniform vec4 viewQuat;
-uniform vec4 modelQuat;
-
-uniform vec3 viewPos;
-uniform vec3 modelPos;
+uniform mat4 camMat;
+uniform mat4 modelMat;
 
 layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 normal;
+out vec3 vNormal;
+out vec3 fragVert;
 
 vec4 quatMult( vec4 q1, vec4 q2 ) {
    vec4 r;
@@ -24,7 +22,9 @@ vec3 vecMult(vec4 q, vec3 v){
 }
 
 void main(void) {
-    vec4 worldModelQuat = quatMult(viewQuat , modelQuat);
-    gl_Position = projMat  *  tmpMat * vec4(modelPos,1.0) * vec4(position, 1.0);
+    //gl_Position = projMat * (vec4( modelPos, 1.0) + ( vec4(vecMult(modelQuat,  position), 1.0) ) );
+    vNormal = normal;
+    fragVert = position;
     //gl_Position  = projMat * vec4(viewPos,1.0) * vec4(vecMult(viewQuat ,modelPos),1.0) * vec4(vecMult(worldModelQuat  , position), 1.0);
+        gl_Position = projMat * camMat * modelMat * vec4(position, 1.0f)  ;
 }
