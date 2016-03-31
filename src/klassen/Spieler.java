@@ -36,7 +36,7 @@ public class Spieler {
 
     public void bewegeVorwaerts() {
         tmp = new Vektor4(0.0f,0.0f,1.0f,1.0f);
-       // tmp = ausrichtung.multipliziereV(tmp);
+        tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
     }
 

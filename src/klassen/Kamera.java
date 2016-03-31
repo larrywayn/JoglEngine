@@ -11,7 +11,7 @@ public class Kamera {
     private float[] perspektive;
     private float aspekt;
     public Kamera(float aspekt){
-        this(aspekt, new Vektor4(0.0f, 0.0f, 0.0f, 0.0f),  new Quaternion(0.0f, 0.0f, 0.0f, 0.0f));
+        this(aspekt, new Vektor4(0.0f, 0.0f, 0.0f, 1.0f),  new Quaternion(0.0f, 0.0f, 0.0f, 1.0f));
     }
     public Kamera(float aspekt, Vektor4 standort, Quaternion ausrichtung){
         this.ausrichtung = ausrichtung;
@@ -54,5 +54,9 @@ public class Kamera {
 
        // return invertView.erzeugeMatrix(this.standort);
         return this.holAusrichtung().erzeugeMatrix(this.standort);
+    }
+
+    public void setzAusrichtung(Quaternion ausrichtung) {
+        this.ausrichtung = ausrichtung;
     }
 }

@@ -1,5 +1,7 @@
 package klassen;
 
+import main.LarryEngineKern;
+
 import java.io.Serializable;
 
 public class Quaternion extends Vektor4 implements Serializable {
@@ -8,7 +10,7 @@ public class Quaternion extends Vektor4 implements Serializable {
 	protected float zSkalierung;
 
 	public Quaternion() {
-		this(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		this(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	public Quaternion(float x, float y, float z, float w) {
@@ -16,7 +18,7 @@ public class Quaternion extends Vektor4 implements Serializable {
 	}
 
 	public Quaternion(float xSkalierung, float ySkalierung, float zSkalierung) {
-		this(0.0f, 0.0f, 0.0f, 0.0f, xSkalierung, ySkalierung, zSkalierung);
+		this(0.0f, 0.0f, 0.0f, 1.0f, xSkalierung, ySkalierung, zSkalierung);
 	}
 
 	public Quaternion(float x, float y, float z, float w, float xSkalierung, float ySkalierung, float zSkalierung) {
@@ -148,7 +150,36 @@ public class Quaternion extends Vektor4 implements Serializable {
 		return matrixArray;
 	};
 
+	public Vektor4 holSeitwerts(float faktor) {
+		Vektor4 vektorSeitwerts = new Vektor4();
+		vektorSeitwerts.setzX((1.0f - (2.0f * ((this.y * this.y) + (this.z * this.z)))) * faktor);
+		vektorSeitwerts.setzY((2.0f * ((this.x * this.y) - (this.z * this.w))) * faktor);
+		vektorSeitwerts.setzZ((2.0f * ((this.x * this.z) + (this.y * this.w))) * faktor);
+		return vektorSeitwerts;
+	};
+	public Vektor4 holVorwaerts(float faktor) {
+		Vektor4 vektorVorwaerts = new Vektor4();
+		vektorVorwaerts.setzX((2.f * ((this.x * this.z) - (this.y * this.w))) * faktor);
+		vektorVorwaerts.setzY((2.0f * ((this.y * this.z) + (this.x * this.w))) * faktor);
+		vektorVorwaerts.setzZ((1.0f - (2.0f * ((this.x * this.x) + (this.y * this.y)))) * faktor);
+		return vektorVorwaerts;
+	};
+
 	public void ausgabe() {
 		System.out.println("Q: " + (this.x) + " " + (this.y) + " " + (this.z) + " " + (this.w));
 	};
+
+	public void rotationAchseV(Vektor4 s, float winkel) {
+		float radians = (float)((winkel / 180.0) * Math.PI);
+		float sinAngle2 = (float)Math.sin(radians / 2.0);
+		Vektor4 v = s.kopiere();
+		v.normalisiere();
+		this.x = v.holX() * sinAngle2;
+		this.y = v.holY() * sinAngle2;
+		this.z = v.holZ() * sinAngle2;
+		this.w = (float)Math.cos(radians / 2.0);
+        System.out.println("q data: "+winkel);
+        v.ausgabe();
+        s.ausgabe();
+	}
 }
