@@ -18,8 +18,8 @@ public class Game {
 			public void run() {
 				final JFrame mainFrame = new JFrame();
 				final GLJPanel mainPanel = new LarryEngineKern();
-				mainPanel.setPreferredSize(new Dimension(800, 600));
-				final FPSAnimator mainAnimator = new FPSAnimator(mainPanel, 60);
+				mainPanel.setPreferredSize(new Dimension(Configuration.holFensterBreite(),Configuration.holFensterHoehe()));
+				final FPSAnimator mainAnimator = new FPSAnimator(mainPanel, Configuration.holFramerate());
 				mainFrame.getContentPane().add(mainPanel);
 				mainFrame.addWindowListener(new WindowAdapter() {
 					@Override
