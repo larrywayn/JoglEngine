@@ -134,4 +134,8 @@ public class Vektor4 extends Vektor implements Serializable {
 	public void ausgabe() {
 		System.out.println("V4: " + (this.x) + " " + (this.y) + " " + (this.z) + " " + (this.w));
 	}
+
+	public Vektor4 kopiere(){
+		return new Vektor4(this.x,this.y,this.z,this.w);
+	}
 }
