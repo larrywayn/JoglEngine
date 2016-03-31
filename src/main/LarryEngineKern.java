@@ -108,8 +108,10 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.spieler = new Spieler();
         this.sb.erzeugeProgram(gl, true, true, false);
         this.line = new Wuerfel(gl);
-        this.steuerung = new Steuerung(this.kamera, this.spieler);
+        this.steuerung = new Steuerung(this, this.kamera, this.spieler);
         this.addKeyListener(this.steuerung);
+        this.addMouseMotionListener(this.steuerung);
+        this.addMouseListener(this.steuerung);
     }
 
     @Override
@@ -121,14 +123,12 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.width = width;
         this.height = height;
         gl.glViewport(0, 0, this.width, this.height);
-       // glu.gluPerspective(45.0, aspect, 0.1, 100.0);
     }
 
     public static void createBuffer(GL4 gl, int bufferNummer, FloatBuffer bufferData) {
         gl.glBindBuffer(GL_ARRAY_BUFFER, bufferNummer);
         gl.glBufferData(GL_ARRAY_BUFFER, bufferData.capacity() * bytesPerFloat, bufferData, GL_STATIC_DRAW);
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     }
 
     public static void createBuffer(GL4 gl, int bufferNummer, IntBuffer bufferData) {
