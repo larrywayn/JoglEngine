@@ -1,7 +1,6 @@
 package klassen;
 
 import com.jogamp.opengl.awt.GLJPanel;
-import main.LarryEngineKern;
 
 import java.awt.event.*;
 
@@ -28,7 +27,24 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     }
 
     public void aktualisiereKamera() {
-
+        Quaternion q = new Quaternion();
+        Quaternion q2 = new Quaternion();
+        Quaternion c = new Quaternion(0.0f,0.0f,0.0f,1.0f);//this.kamera.holAusrichtung();
+        Quaternion p = this.spieler.holAusrichtung();
+       //System.out.println("------------");
+        Vektor4 s = p.holSeitwerts(1f);
+        Vektor4 v = p.holVorwaerts(1f);
+        q.rotationAchseV(s, this.rotY);
+        q2.rotationAchseV(s.kreuzProduktV4(v),  this.rotX*90.0f);
+       // c = c.multipliziereQ(q2);
+        c = c.multipliziereQ(q);
+        this.spieler.setzAusrichtung(c);
+     Vektor4 tmp = this.spieler.holStandort().kopiere();
+     tmp.setzZ(tmp.holZ()+4.0f);
+        this.kamera.setzStandort(tmp);
+     //   this.spieler.holStandort().ausgabe();
+     //   this.kamera.holStandort().ausgabe();
+      //  System.out.println("------------");
     }
 
     protected int[] relativeMousePosition(int mouseXScreen, int mouseYScreen) {
@@ -36,6 +52,9 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     }
 
     protected int clamp(int val) {
+        return Math.max(-1, Math.min(1, val));
+    }
+    protected float clamp(float val) {
         return Math.max(-1, Math.min(1, val));
     }
 
@@ -94,6 +113,8 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     @Override
     public void mouseDragged(MouseEvent e) {
         int[] relativeMousePositions = this.relativeMousePosition(e.getXOnScreen(), e.getYOnScreen());
+        int xRichtung = e.getXOnScreen();
+        int yRichtung = e.getYOnScreen();
         //  if (event.button === 2) {
         float newX = relativeMousePositions[0];
         float newY = relativeMousePositions[1];
@@ -103,28 +124,13 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         this.lastY = newY;
         this.rotX += deltaX;
         this.rotY += deltaY;
-        //  }
-
-
-        int xRichtung = this.clamp(relativeMousePositions[0]);
-        int yRichtung = this.clamp(relativeMousePositions[1]);
-        Quaternion q = new Quaternion();
-        Quaternion q2 = new Quaternion();
-        Quaternion c = this.kamera.holAusrichtung();
+       /* System.out.println("------------");
         System.out.println("------------");
-        Vektor4 s = c.holSeitwerts(1);
-        Vektor4 v = c.holVorwaerts(1);
-     //   s.ausgabe();
-      //  v.ausgabe();
-        q.rotationAchseV(s, this.rotX);
-        q2.rotationAchseV(s.kreuzProduktV4(v),  this.rotY);
-        q.ausgabe();
-        q2.ausgabe();
-        c = c.multipliziereQ(q);
-        c = c.multipliziereQ(q2);
-        this.kamera.setzAusrichtung(c);
-        c.ausgabe();
-        //    System.out.println(relativeMousePositions[0]+" # "+relativeMousePositions[1]+" ## "+xRichtung+" # "+yRichtung);
+        System.out.println("A: "+xRichtung+" # "+yRichtung);
+        System.out.println("L: "+this.lastX+" # "+this.lastY);
+        System.out.println("D: "+deltaX+" # "+deltaY);
+        System.out.println("R: "+ this.rotX+" # "+this.rotY);
+       */
     }
 
     @Override

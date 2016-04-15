@@ -1,37 +1,31 @@
 package klassen;
 
+import grundklassen.DrawObjekt;
+
 /**
  * Created by larry on 20.03.2016.
  */
-public class Spieler {
-    Quaternion ausrichtung;
-    Vektor4 standort;
-    Physik physik;
-    Vektor4 tmp;
+public class Spieler extends DrawObjekt {
+    protected Physik physik;
+    protected Vektor4 tmp;
 
     public Spieler(){
-        this(new Quaternion(0.0f,0.0f,0.0f,1.0f), new Vektor4(0.0f,0.0f,0.0f,1.0f), new Physik(0.82f,50.0f));
+        this(new Quaternion(0.0f,0.0f,0.0f,1.0f), new Vektor4(0.0f,0.0f,-8.0f,1.0f), new Physik(0.82f,50.0f));
     }
 
     public Spieler(Quaternion q, Vektor4 v, Physik p){
-        this.ausrichtung = q;
-        this.standort = v;
+        super();
+        this.setzAusrichtung(q);
+        this.setzStandort(v);
         this.physik = p;
     }
 
     public float[] holMatrix() {
-       // this.standort.ausgabe();
         return this.holAusrichtung().erzeugeMatrix(this.standort);
     }
 
     public Physik holPhysik() {
         return this.physik;
-    }
-    public Vektor4 holStandort(){
-        return this.standort;
-    }
-    public Quaternion holAusrichtung(){
-        return this.ausrichtung;
     }
 
     public void bewegeVorwaerts() {
@@ -47,13 +41,13 @@ public class Spieler {
     }
 
     public void bewegeLinks() {
-        tmp = new Vektor4(1.0f,0.0f,0.0f,1.0f);
+        tmp = new Vektor4(-1.0f,0.0f,0.0f,1.0f);
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
     }
 
     public void bewegeRechts() {
-        tmp = new Vektor4(-1.0f,0.0f,0.0f,1.0f);
+        tmp = new Vektor4(1.0f,0.0f,0.0f,1.0f);
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
     }

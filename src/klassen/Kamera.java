@@ -19,6 +19,10 @@ public class Kamera {
         this.aspekt = aspekt;
         this.perspektive = erzeugePerspektive(Configuration.holSichtfeld(), Configuration.holNear(),Configuration.holFar());
     }
+    public void setzAspekt(float aspekt){
+        this.aspekt = aspekt;
+        this.perspektive = erzeugePerspektive(Configuration.holSichtfeld(), Configuration.holNear(), Configuration.holFar());
+    }
     protected float[] erzeugePerspektive(float fieldOfViewInRadians, float near, float far) {
         float f = 1.0f/(float)Math.tan(fieldOfViewInRadians/2.0f);
         return new float[]{
@@ -42,21 +46,25 @@ public class Kamera {
         Quaternion invertView = null;
         Vektor4 invertStandort = null;
         try {
-            invertView = LarryEngineKern.kopiereObject(this.holAusrichtung());
+            invertView = this.holAusrichtung().kopiere();
+           // invertView.invertiere();
             invertView.konjugante();
-            invertStandort = LarryEngineKern.kopiereObject(this.holStandort());
-          //  invertStandort.invertiere();
+            invertStandort = this.holStandort().kopiere();
+            invertStandort.invertiere();
         } catch (Exception e) {
             e.printStackTrace();
         }
     //    invertView.invertiere();
        // Vektor4 invertStandort = this.mapper.convertValue(this.holStandort(), Vektor4.class);
 
-       // return invertView.erzeugeMatrix(this.standort);
-        return this.holAusrichtung().erzeugeMatrix(this.standort);
+        return invertView.erzeugeMatrix(invertStandort);
+        //return this.holAusrichtung().erzeugeMatrix(this.standort);
     }
 
     public void setzAusrichtung(Quaternion ausrichtung) {
         this.ausrichtung = ausrichtung;
+    }
+    public void setzStandort(Vektor4 standort) {
+        this.standort = standort;
     }
 }

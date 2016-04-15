@@ -9,7 +9,7 @@ public class Vektor4 extends Vektor implements Serializable {
 
 	public Vektor4() {
 		super(0.0f,0.0f,0.0f);
-		this.w = 0.0f;
+		this.w = 1.0f;
 	}
 	
 	public Vektor4(float x, float y, float z, float w) {

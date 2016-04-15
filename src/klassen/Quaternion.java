@@ -2,9 +2,7 @@ package klassen;
 
 import main.LarryEngineKern;
 
-import java.io.Serializable;
-
-public class Quaternion extends Vektor4 implements Serializable {
+public class Quaternion extends Vektor4 {
 	protected float xSkalierung;
 	protected float ySkalierung;
 	protected float zSkalierung;
@@ -178,8 +176,9 @@ public class Quaternion extends Vektor4 implements Serializable {
 		this.y = v.holY() * sinAngle2;
 		this.z = v.holZ() * sinAngle2;
 		this.w = (float)Math.cos(radians / 2.0);
-        System.out.println("q data: "+winkel);
-        v.ausgabe();
-        s.ausgabe();
+	}
+
+	public Quaternion kopiere() {
+		return new Quaternion(this.x, this.y, this.z, this.w,this.xSkalierung,this.ySkalierung,this.holzSkalierung());
 	}
 }

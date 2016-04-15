@@ -43,6 +43,7 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		new main.Game();
+            Game game;
+            game = new main.Game();
 	}
 }

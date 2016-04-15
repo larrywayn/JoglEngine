@@ -9,6 +9,7 @@ public class Configuration {
     private final static int fensterHoehe = 600;
     private final static String titel = "MMO Game 1.0";
     private final static int framerate = 120;
+    private final static String texturPfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\texturen\\";
 
     protected Configuration() {
     }
@@ -20,7 +21,11 @@ public class Configuration {
     public static float holSichtfeld() {
         return sichtfeld;
     }
-
+    
+    public static String holTexturPfad() {
+        return texturPfad;
+    }
+    
     public static float holNear() {
         return near;
     }
