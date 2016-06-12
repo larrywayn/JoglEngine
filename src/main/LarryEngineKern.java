@@ -95,7 +95,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                 if(uvbuf != 0 && t != null){
                     gl.glEnable(GL_TEXTURE_2D);
                     gl.glActiveTexture(GL_TEXTURE0);
-
                     t.enable(gl);
                     t.bind(gl);
                     gl.glUniform1i((gl.glGetUniformLocation(sb.holProgram(), "texture0")),0);
@@ -103,8 +102,8 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                     
                     gl.glEnableVertexAttribArray(2);
                     gl.glBindBuffer(GL_ARRAY_BUFFER, uvbuf);
-                    gl.glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-                    gl.glBindTexture(GL_TEXTURE_2D,0);
+                    gl.glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+                    gl.glBindTexture(GL_TEXTURE_2D,t.getTextureObject());
                 }else{ 
                     gl.glUniform1f((gl.glGetUniformLocation(sb.holProgram(), "isTex")),0.0f);
                    // System.out.println("Textur im render nicht da");
@@ -114,7 +113,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                 gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "projMat")), 1, false, this.kamera.holPerspektive(), 0);
                 gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "camMat")), 1, false, this.kamera.holMatrix(), 0);
                 gl.glUniformMatrix4fv((gl.glGetUniformLocation(sb.holProgram(), "modelMat")), 1, false, matrix, 0);
-
                 gl.glDrawElements(GL_TRIANGLES, mesh.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
                 gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
                 gl.glBindBuffer(GL_ARRAY_BUFFER, 0);

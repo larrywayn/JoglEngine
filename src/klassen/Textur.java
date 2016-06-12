@@ -5,15 +5,10 @@
  */
 package klassen;
 
-import com.jogamp.opengl.GL4;
-import static com.jogamp.opengl.GL4.*;
-import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import javax.imageio.ImageIO;
 
 /**
@@ -42,10 +37,10 @@ public class Textur implements Runnable {
             System.out.println("Pfad: "+(Configuration.holTexturPfad()+dateipfad));
             File file = new File(Configuration.holTexturPfad()+dateipfad);
             if(file.exists()){
-            System.out.println("Ergebnis:"+file.toString());
-            this.origIMG = ImageIO.read(file);
-            this.istGeladen = true;
-            tm.speichereTextur(this);
+                System.out.println("Ergebnis:"+file.toString());
+                this.origIMG = ImageIO.read(file);
+                this.istGeladen = true;
+                tm.speichereTextur(this);
             }
         } catch (IOException ex) {
         }
