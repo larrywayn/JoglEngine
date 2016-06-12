@@ -29,26 +29,36 @@ public class Spieler extends DrawObjekt {
     }
 
     public void bewegeVorwaerts() {
-        tmp = new Vektor4(0.0f,0.0f,1.0f,1.0f);
+        tmp = new Vektor4(0.0f,0.0f,-1.0f,1.0f);
+       // Quaternion a = ausrichtung.kopiere();
+       // a.invertiere();
+       ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
+        ausrichtung.invertiere();
     }
 
     public void bewegeRueckwaerts() {
-        tmp = new Vektor4(0.0f,0.0f,-1.0f,1.0f);
+        tmp = new Vektor4(0.0f,0.0f,1.0f,1.0f);
+        ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
+        ausrichtung.invertiere();
     }
 
     public void bewegeLinks() {
         tmp = new Vektor4(-1.0f,0.0f,0.0f,1.0f);
+        ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
+        ausrichtung.invertiere();
     }
 
     public void bewegeRechts() {
         tmp = new Vektor4(1.0f,0.0f,0.0f,1.0f);
+        ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
+        ausrichtung.invertiere();
     }
 }
