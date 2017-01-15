@@ -19,14 +19,14 @@ public class TexturManager {
 
     private ConcurrentHashMap<Integer, Texture> arT;
     private ConcurrentHashMap<String, Integer> arM;
-    private ConcurrentHashMap<Integer, Geometrie> arG;
+    private ConcurrentHashMap<Integer, Geometrie> arGTMP;
     private ConcurrentLinkedQueue<Textur> clqT;
     private GL4 gl;
     private static int aid;
 
     public TexturManager(GL4 gl) {
         this.arT = new ConcurrentHashMap<>();
-        this.arG = new ConcurrentHashMap<>();
+        this.arGTMP = new ConcurrentHashMap<>();
         this.arM = new ConcurrentHashMap<>();
         this.clqT = new ConcurrentLinkedQueue<>();
         this.gl = gl;
@@ -35,18 +35,20 @@ public class TexturManager {
 
     public synchronized void ladeTextur(Geometrie geom) {
         int caid = ++aid;
-        String tmpTex = "grid.jpg";
-        if (!arM.containsKey(tmpTex)) {
-            Textur t = new Textur(tmpTex, this, caid);
-            Thread thread = new Thread(t);
-            thread.start();
-            arG.put(caid, geom);
-        } else {
-            int texId = arM.get(tmpTex);
-            if (texId > 0) {
-                Texture tex = arT.get(texId);
-                if (tex != null) {
-                    geom.setzTextur(tex);
+        String tmpTex = geom.holTexturName(); //"grid.jpg";
+        if (tmpTex != null) {
+            if (!arM.containsKey(tmpTex)) {
+                Textur t = new Textur(tmpTex, this, caid);
+                Thread thread = new Thread(t);
+                thread.start();
+                arGTMP.put(caid, geom);
+            } else {
+                int texId = arM.get(tmpTex);
+                if (texId > 0) {
+                    Texture tex = arT.get(texId);
+                    if (tex != null) {
+                        geom.setzTextur(tex);
+                    }
                 }
             }
         }
@@ -67,13 +69,13 @@ public class TexturManager {
                 textur.setTexParameteri(gl, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 textur.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
                 int oid = t.holObjektID();
-                Geometrie geom = arG.get(oid);
+                Geometrie geom = arGTMP.get(oid);
                 int texID = arT.size() + 1;
                 arM.put(t.holDateipfad(), texID);
                 arT.put(texID, textur);
-                arG.remove(oid);
+                arGTMP.remove(oid);
                 geom.setzTextur(textur);
-                System.out.println("Textur gesetzt "+textur.toString()+" "+geom.toString());
+                System.out.println("Textur gesetzt " + textur.toString() + " " + geom.toString());
             }
         }
     }
@@ -82,5 +84,4 @@ public class TexturManager {
         clqT.add(textur);
         System.out.println("Textur angefügt");
     }
-
 }

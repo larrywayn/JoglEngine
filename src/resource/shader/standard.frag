@@ -8,6 +8,7 @@ uniform mat4 camMat;
 uniform float isTex;
 uniform mat4 modelMat;
 uniform sampler2D texture0;
+uniform vec3 colorIn;
 
 void main(){
     mat3 mm = mat3(camMat);
@@ -15,14 +16,17 @@ void main(){
     vec3 normal = normalize(mm * vNormal);
     vec3 fragPosition = vec3(modelMat * vec4(fragVert, 1.0f));
 
-    vec3 surfaceToLight = vec3(0.0f,0.0f,1.0f) - fragPosition;
+    vec3 surfaceToLight = vec3(0.0f,0.5f,1.0f) - fragPosition;
     float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal));
     brightness = clamp(brightness, 0.0f, 1.0f);
-
-    if(isTex == 1.0f){
-        vec4 colorT = texture2D(texture0, vUV);
-        glFragColor = vec4(brightness * vec3(colorT.rgb),1.0f);
-    }else{
-        glFragColor = vec4(brightness * vec3(1.0f,0.0f,0.0f),1.0f);
-    }
+    if(isTex == 2.0f){  
+        glFragColor = vec4(colorIn,1.0f);
+    } else {
+       if(isTex == 1.0f){
+           vec4 colorT = texture2D(texture0, vUV);
+           glFragColor = vec4(brightness * vec3(colorT.rgb),1.0f);
+       }else{
+           glFragColor = vec4(brightness * vec3(0.0f,0.5f,0.5f),1.0f);
+       }
+   }
 }

@@ -122,12 +122,12 @@ public class Vektor4 extends Vektor implements Serializable {
 	}
 
 	public void normalisiere() {
-		float len = 1.0f / this.laenge();
+		float len = this.laenge();
 		if (len > 0.0f) {
-			this.x *= len;
-			this.y *= len;
-			this.z *= len;
-			this.w *= len;
+			this.x /= len;
+			this.y /= len;
+			this.z /= len;
+			this.w /= len;
 		}
 	}
 

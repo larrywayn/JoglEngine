@@ -10,6 +10,11 @@ public class Configuration {
     private final static String titel = "MMO Game 1.0";
     private final static int framerate = 120;
     private final static String texturPfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\texturen\\";
+    private final static String geometriePfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\meshes\\";
+
+    public static String holGeometriePfad() {
+        return geometriePfad;
+    }
 
     protected Configuration() {
     }

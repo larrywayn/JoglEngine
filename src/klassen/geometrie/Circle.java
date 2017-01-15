@@ -7,15 +7,46 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.GLBuffers;
 import grundklassen.Geometrie;
 import klassen.GeometrieManager;
-import klassen.Vektor4;
 import main.LarryEngineKern;
 
-public class Linie extends Geometrie {
-    public Linie(GeometrieManager mM, Vektor4 start, Vektor4 ende) {
+public class Circle extends Geometrie {
+    public Circle(GeometrieManager mM) {
         super(mM);
         GL4 gl = this.mM.holGL();
-        this.verticesPlain = new float[]{0, 0, 0, start.holX(), start.holY(), start.holZ(), ende.holX(), ende.holY(), ende.holZ()};
-        this.indiciesPlain = new int[]{1, 2};
+        this.verticesPlain = new float[]{0, 0, 0, 
+             0.000000f, 0.000000f, -3.000000f,
+             -1.148050f, 0.000000f, -2.771638f, 
+             -2.121320f, 0.000000f, -2.121320f, 
+             -2.771638f, 0.000000f, -1.148050f, 
+             -3.000000f, 0.000000f, 0.000000f,
+             -2.771638f, 0.000000f, 1.148051f, 
+             -2.121320f, 0.000000f, 2.121320f,
+             -1.148050f, 0.000000f, 2.771638f, 
+             -0.000000f, 0.000000f, 3.000000f, 
+             1.148050f, 0.000000f, 2.771639f,
+             2.121320f, 0.000000f, 2.121321f,
+             2.771638f, 0.000000f, 1.148051f, 
+             3.000000f, 0.000000f, -0.000000f, 
+             2.771638f, 0.000000f, -1.148051f, 
+             2.121320f, 0.000000f, -2.121321f,
+             1.148049f, 0.000000f, -2.771639f};
+        this.indiciesPlain = new int[]{
+             2, 1,
+             3, 2,
+             4, 3,
+             5, 4,
+             6, 5,
+             7, 6,
+             8, 7,
+             9, 8,
+             10, 9,
+             11, 10,
+             12, 11,
+             13, 12,
+             14, 13,
+             15, 14,
+             16, 15,
+             1, 16};
         int[] vboHandles = new int[2];
         gl.glGenBuffers(2, vboHandles, 0);
         this.vertices = vboHandles[0];

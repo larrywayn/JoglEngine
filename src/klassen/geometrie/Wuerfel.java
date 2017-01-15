@@ -1,20 +1,20 @@
 package klassen.geometrie;
 
 import com.jogamp.opengl.GL4;
-
 import grundklassen.Geometrie;
+import klassen.GeometrieManager;
 import main.LarryEngineKern;
 
 public class Wuerfel extends Geometrie {
-
-    public Wuerfel(GL4 gl) {
-        this.verticesPlain = new float[]{ //Vertices according to faces
-            -1.0f, -1.0f, 1.0f, //Vertex 0
-            1.0f, -1.0f, 1.0f, //v1
-            -1.0f, 1.0f, 1.0f, //v2
-            1.0f, 1.0f, 1.0f, //v3
-
-            1.0f, -1.0f, 1.0f, //...
+    public Wuerfel(GeometrieManager mM){
+        super(mM);
+        GL4 gl = this.mM.holGL();
+        this.verticesPlain = new float[]{
+            -1.0f, -1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f,
             1.0f, -1.0f, -1.0f,
             1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, -1.0f,
@@ -58,7 +58,7 @@ public class Wuerfel extends Geometrie {
             0.0f, 1.0f,
             1.0f, 0.0f,
             1.0f, 1.0f};
-        this.normalenPlain = new float[]{ // vorne
+        this.normalenPlain = new float[]{
             0.0f, 0.0f, 1.0f,
             0.0f, 0.0f, 1.0f,
             0.0f, 0.0f, 1.0f,

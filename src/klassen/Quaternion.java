@@ -2,6 +2,45 @@ package klassen;
 
 public class Quaternion extends Vektor4 {
 
+    static Quaternion slerp(Quaternion inA, Quaternion inB, double weight) {
+        Quaternion out = new Quaternion();
+        if (weight < 0.0) {
+            return inA;
+        } else if (weight > 1.0) {
+            return inB;
+        }
+        float dot = inA.skalarProduktV4(inB);
+        float x2, y2, z2, w2;
+        if (dot < 0.0) {
+            dot = 0.0f - dot;
+            x2 = 0.0f - inB.holX();
+            y2 = 0.0f - inB.holY();
+            z2 = 0.0f - inB.holZ();
+            w2 = 0.0f - inB.holW();
+        } else {
+            x2 = inB.holX();
+            y2 = inB.holY();
+            z2 = inB.holZ();
+            w2 = inB.holW();
+        }
+        float t1, t2;
+        final double EPSILON = 0.0001;
+        if ((1.0 - dot) > EPSILON) {
+            double angle = Math.acos(dot);
+            double sinAngle = Math.sin(angle);
+            t1 = (float) (Math.sin((1.0f - weight) * angle) / sinAngle);
+            t2 = (float) (Math.sin(weight * angle) / sinAngle);
+        } else {
+            t1 = (float) (1.0f - weight);
+            t2 = (float) weight;
+        }
+        out.setzX((inA.holX() * t1) + (x2 * t2));
+        out.setzY((inA.holY() * t1) + (y2 * t2));
+        out.setzZ((inA.holZ() * t1) + (z2 * t2));
+        out.setzW((inA.holW() * t1) + (w2 * t2));
+        return out;
+    }
+
     protected float xSkalierung;
     protected float ySkalierung;
     protected float zSkalierung;
@@ -56,10 +95,86 @@ public class Quaternion extends Vektor4 {
         float tmpY = (aw * by + ay * bw + az * bx - ax * bz);
         float tmpZ = (aw * bz + az * bw + ax * by - ay * bx);
         float tmpW = (aw * bw - ax * bx - ay * by - az * bz);
+        /*   float tmpW = (aw * bw) - (ax * bx) - (ay * by) - (az * bz);
+        float tmpX = (aw * bx) - (ax * bw) - (ay * bz) - (az * by);
+        float tmpY = (aw * by) - (ax * bw) - (ay * bw) - (az * bx);
+        float tmpZ = (aw * bz) - (ax * by) - (ay * bx) - (az * bw);*/
         return new Quaternion(tmpX, tmpY, tmpZ, tmpW);
     }
 
+    public Quaternion multipliziereVV(Vektor4 rechtesQuaternion) {
+        float ax = this.x;
+        float ay = this.y;
+        float az = this.z;
+        float aw = this.w;
+        float bx = rechtesQuaternion.holX();
+        float by = rechtesQuaternion.holY();
+        float bz = rechtesQuaternion.holZ();
+        float bw = rechtesQuaternion.holW();
+        float tmpX = (aw * bx + ax * bw + ay * bz - az * by);
+        float tmpY = (aw * by + ay * bw + az * bx - ax * bz);
+        float tmpZ = (aw * bz + az * bw + ax * by - ay * bx);
+        float tmpW = (aw * bw - ax * bx - ay * by - az * bz);
+        /*    float tmpW = (aw * bw) - (ax * bx) - (ay * by) - (az * bz);
+        float tmpX = (aw * bx) - (ax * bw) - (ay * bz) - (az * by);
+        float tmpY = (aw * by) - (ax * bw) - (ay * bw) - (az * bx);
+        float tmpZ = (aw * bz) - (ax * by) - (ay * bx) - (az * bw);*/
+        return new Quaternion(tmpX, tmpY, tmpZ, tmpW);
+    }
+
+    public static Quaternion lookAt(Vektor4 dir, Vektor4 up) {
+        Quaternion q = new Quaternion();
+        Vektor4 xVec = up.kreuzProduktV4(dir);
+        Vektor4 yVec = dir.kreuzProduktV4(xVec);
+        float tr = xVec.holX() + yVec.holY() + dir.holZ();
+        q.setzX(yVec.holZ() - dir.holY());
+        q.setzY(dir.holX() - xVec.holZ());
+        q.setzZ(xVec.holY() - yVec.holX());
+        q.setzW(tr + 1.0f);
+        q.normalisiere();
+        return q;
+    }
+
+    public static Quaternion lookAt2(Vektor4 dirToLook, Vektor4 pos) {
+        Vektor4 direction = dirToLook.subtrahiereV4(pos);
+        direction.normalisiere();
+        Vektor4 abc = new Vektor4(0, 0, 1, 1);
+        float dot = abc.skalarProduktV4(direction);
+        Quaternion rotation = null;
+        if (Math.abs(dot - (-1.0f)) < 0.000001f) {
+            abc = new Vektor4(0, 1, 0, 1);
+            rotation = new Quaternion(abc.holX(), abc.holY(), abc.holZ(), 3.1415926535897932f); //glm::angleAxis(RadiansToDegrees(M_PI), abc);
+            return rotation;
+        } else if (Math.abs(dot - (1.0f)) < 0.000001f) {
+            rotation = new Quaternion();
+            return rotation;
+        }
+        float angle = (float) Math.acos(dot);
+        Vektor4 cross = abc.kreuzProduktV4(direction);
+        cross.normalisiere();
+        rotation = Quaternion.createFromAxisAngle(cross, angle);
+        rotation.normalisiere();
+        return rotation;
+    }
+
+    public static Quaternion createFromAxisAngle(Vektor4 axis, float angle) {
+        angle = (float) ((angle / 180.0) * Math.PI);
+        float halfAngle = angle * .5f;
+        float s = (float) Math.sin(halfAngle);
+        Quaternion q = new Quaternion();
+        q.setzX(axis.holX() * s);
+        q.setzY(axis.holY() * s);
+        q.setzZ(axis.holZ() * s);
+        q.setzW((float) Math.cos(halfAngle));
+        return q;
+    }
+
     public Vektor4 multipliziereV(Vektor4 vektor) {
+
+        /*  this.invertiere();Vektor4 rv = this.multipliziereVV(vektor);
+        rv = this.multipliziereVV(rv);
+       this.invertiere();
+        return rv;*/
         float vx = vektor.holX();
         float vy = vektor.holY();
         float vz = vektor.holZ();
@@ -87,8 +202,8 @@ public class Quaternion extends Vektor4 {
     }
 
     public void invertiere() {
-        this.normalisiere();
         this.konjugante();
+        this.normalisiere();
     }
 
     public float magnitude() {
@@ -103,11 +218,11 @@ public class Quaternion extends Vektor4 {
             this.y = 0.0f;
             this.z = 0.0f;
         } else {
-            mag = 1.0f / mag;
-            this.w *= mag;
-            this.x *= mag;
-            this.y *= mag;
-            this.z *= mag;
+            //mag = 1.0f / mag;
+            this.w /= mag;
+            this.x /= mag;
+            this.y /= mag;
+            this.z /= mag;
         }
     }
 
@@ -157,11 +272,13 @@ public class Quaternion extends Vektor4 {
     }
 
     public Vektor4 holVorwaerts() {
-        Vektor4 vektorVorwaerts = new Vektor4();
+        Vektor4 vektorVorwaerts = new Vektor4(0.0f, 0.0f, 1.0f, 1.0f);
+        vektorVorwaerts = this.multipliziereV(vektorVorwaerts);
+        /*   Vektor4 vektorVorwaerts = new Vektor4();
         vektorVorwaerts.setzX(2.0f * (this.x * this.z + this.w * this.y));
         vektorVorwaerts.setzY(2.0f * (this.y * this.x - this.w * this.x));
         vektorVorwaerts.setzZ(1.0f - 2.0f * (this.x * this.x + this.y * this.y));
-        vektorVorwaerts.setzW(1.0f);
+        vektorVorwaerts.setzW(1.0f);*/
         return vektorVorwaerts;
     }
 

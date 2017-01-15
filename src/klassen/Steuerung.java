@@ -3,6 +3,7 @@ package klassen;
 import com.jogamp.opengl.awt.GLJPanel;
 
 import java.awt.event.*;
+import java.util.Arrays;
 
 /**
  * Created by larry on 20.03.2016.
@@ -12,10 +13,12 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     protected Kamera kamera;
     protected Spieler spieler;
     protected GLJPanel fenster;
-    protected float rotX;
+    protected float rotX, rotX2;
     protected float rotY;
     protected float lastX;
     protected float lastY;
+    protected float mouseFaktorX;
+    protected float mouseFaktorY;
 
     public Steuerung(GLJPanel fenster, Kamera kamera, Spieler spieler) {
         this.kamera = kamera;
@@ -25,51 +28,82 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         this.rotY = 0;
         this.lastX = 0;
         this.lastY = 0;
+        this.mouseFaktorX = 3.0f;
+        this.mouseFaktorY = 3.0f;
+        Quaternion spielerQ = this.spieler.holAusrichtung();
+        Quaternion kameraQ = this.kamera.holAusrichtung();
+        Quaternion kameraNeuQQ2 = spielerQ.kopiere();
+        kameraNeuQQ2.konjugante();
+        Vektor4 xAchseKamera = spielerQ.holSeitwerts();
+        // xAchseKamera = kameraNeuQQ2.multipliziereV(xAchseKamera);
+
+        Quaternion kameraRotXQQ = Quaternion.createFromAxisAngle(xAchseKamera, -45.0f);
+        kameraRotXQQ.normalisiere();
+        Quaternion kameraNeuQ = kameraQ.multipliziereQ(kameraRotXQQ);
+        //   Quaternion kameraRotXQQ = Quaternion.createFromAxisAngle(xAchseKamera, -this.rotY);
+        // kameraRotXQQ.normalisiere();
+        // kameraNeuQ = kameraNeuQ.multipliziereQ(kameraRotXQQ);
+
+        kameraNeuQ.normalisiere();
+        this.kamera.setzAusrichtung(kameraNeuQ);
     }
 
     public void aktualisiereKamera() {
-        Quaternion spielerRotXQ = new Quaternion();
-        Quaternion kameraRotXQ = new Quaternion();
-        Quaternion kameraRotZQ = new Quaternion();
+
+        Quaternion targetRotation = this.spieler.holAusrichtung().kopiere();
+        Quaternion tmpQuaternion = Quaternion.createFromAxisAngle(new Vektor4(0f, 1f, 0f, 1f), 180f * (float) (Math.PI / 180f));
+        targetRotation.multipliziereQ(tmpQuaternion);
+        targetRotation.normalisiere();
+
+        Quaternion qm = Quaternion.slerp(this.kamera.holAusrichtung(), targetRotation, 0.2);
+        qm.normalisiere();
+        this.kamera.setzAusrichtung(qm);
+
         Quaternion spielerQ = this.spieler.holAusrichtung();
         Quaternion kameraQ = this.kamera.holAusrichtung();
-        
-        Vektor4 xAchseSpieler = spielerQ.holSeitwerts();  
-        Vektor4 yAchseSpieler = spielerQ.holVorwaerts(); 
+
         Vektor4 zAchseSpieler = spielerQ.holVertikal();
-       // xAchseSpieler.normalisiere();
-       // yAchseSpieler.normalisiere();
-       // zAchseSpieler.normalisiere();
-
-        Vektor4 xAchseKamera = kameraQ.holSeitwerts();
-        Vektor4 yAchseKamera = kameraQ.holVorwaerts(); 
-        Vektor4 zAchseKamera = kameraQ.holVertikal();
-        xAchseKamera.normalisiere();
-        yAchseKamera.normalisiere();
-        zAchseKamera.normalisiere();
-
-        spielerRotXQ.rotationAchseV(zAchseSpieler, this.rotX);
-        spielerRotXQ.normalisiere();
-                
-        kameraRotXQ.rotationAchseV(xAchseKamera, this.rotY);
-        kameraRotXQ.normalisiere();
-        
-        kameraRotZQ.rotationAchseV(zAchseKamera, this.rotX);
-        kameraRotZQ.normalisiere();
+        Quaternion spielerRotXQ = Quaternion.createFromAxisAngle(zAchseSpieler, this.rotX);
         Quaternion spielerNeuQ = spielerRotXQ.multipliziereQ(spielerQ);
+        spielerNeuQ.normalisiere();
+
+        zAchseSpieler = spielerNeuQ.holVertikal();
+        Vektor4 xAchseKamera = spielerQ.holSeitwerts();
+        //   Vektor4 yAchseKamera = kameraQ.holVorwaerts();
+        // Vektor4 zAchseKamera = kameraQ.holVertikal();
+
+        Quaternion kameraNeuQQ2 = kameraQ.kopiere();
+        kameraNeuQQ2.konjugante();
+        zAchseSpieler = kameraNeuQQ2.multipliziereV(zAchseSpieler);
+        xAchseKamera = kameraNeuQQ2.multipliziereV(xAchseKamera);
+
+        Quaternion kameraRotXQ = Quaternion.createFromAxisAngle(zAchseSpieler, -this.rotX);
+        kameraRotXQ.normalisiere();
+        Quaternion kameraNeuQ = kameraQ.multipliziereQ(kameraRotXQ);
+        Quaternion kameraRotXQQ = Quaternion.createFromAxisAngle(xAchseKamera, this.rotY);
+        kameraRotXQQ.normalisiere();
+        kameraNeuQ = kameraNeuQ.multipliziereQ(kameraRotXQQ);
+
+        kameraNeuQ.normalisiere();
+            this.kamera.setzAusrichtung(kameraNeuQ);
         this.spieler.setzAusrichtung(spielerNeuQ);
 
         Vektor4 tmp = this.spieler.holStandort().kopiere();
-        tmp.setzZ(tmp.holZ() + 8.0f);
-        tmp.setzW(1.0f);
+        Quaternion kameraNeuQQ = kameraNeuQ.kopiere();
+        kameraNeuQQ.konjugante();
+        Vektor4 abstand = new Vektor4(0, 5, 10, 1.0f);
+        // abstand = kameraNeuQQ.multipliziereV(abstand);
+        //  abstand.ausgabe();
 
-        //this.kamera.setzAusrichtung(kameraQ.multipliziereQ(kameraRotXQ));
+        tmp = kameraNeuQQ.multipliziereV(tmp);
+        tmp = tmp.addiereV4(abstand);
+        //    tmp.setzZ(tmp.holZ() + 10.0f);
+        // tmp.setzY(tmp.holY() + 5.0f);
         this.kamera.setzStandort(tmp);
-
 
         this.rotX = 0;
         this.rotY = 0;
-        //System.out.println("-----------------------");
+        System.out.println("-----------------------");
     }
 
     protected int[] relativeMousePosition(int mouseXScreen, int mouseYScreen) {
@@ -118,12 +152,17 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        int[] relativeMousePositions = this.relativeMousePosition(e.getXOnScreen(), e.getYOnScreen());
+        this.lastX = relativeMousePositions[0] / this.mouseFaktorX;
+        this.lastY = relativeMousePositions[1] / this.mouseFaktorY;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        this.lastX = 0;
+        this.lastY = 0;
+        this.rotX = 0;
+        this.rotY = 0;
     }
 
     @Override
@@ -139,11 +178,11 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     @Override
     public void mouseDragged(MouseEvent e) {
         int[] relativeMousePositions = this.relativeMousePosition(e.getXOnScreen(), e.getYOnScreen());
-        int xRichtung = e.getXOnScreen();
-        int yRichtung = e.getYOnScreen();
+        // int xRichtung = e.getXOnScreen();
+        //  int yRichtung = e.getYOnScreen();
         //  if (event.button === 2) {
-        float newX = relativeMousePositions[0];
-        float newY = relativeMousePositions[1];
+        float newX = relativeMousePositions[0] / this.mouseFaktorX;
+        float newY = relativeMousePositions[1] / this.mouseFaktorY;
         float deltaX = newX - this.lastX;
         float deltaY = newY - this.lastY;
         this.lastX = newX;
@@ -151,13 +190,16 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         this.rotX -= deltaX;
         this.rotY -= deltaY;
 
-        /* System.out.println("------------");
         System.out.println("------------");
-        System.out.println("A: "+xRichtung+" # "+yRichtung);
-        System.out.println("L: "+this.lastX+" # "+this.lastY);
-        System.out.println("D: "+deltaX+" # "+deltaY);
-        System.out.println("R: "+ this.rotX+" # "+this.rotY);
-         */
+        System.out.println("------------");
+
+        System.out.println("X:" + relativeMousePositions[0] + " y:" + relativeMousePositions[1]);
+
+// System.out.println("A: "+xRichtung+" # "+yRichtung);
+        // System.out.println("L: "+this.lastX+" # "+this.lastY);
+        //System.out.println("D: "+deltaX+" # "+deltaY);
+        System.out.println("R: " + this.rotX + " # " + this.rotY);
+
     }
 
     @Override
