@@ -15,55 +15,55 @@ import static com.jogamp.opengl.GL4.*;
 
 public class ShaderBlock {
 
-	protected String name;
-	protected int program;
-	protected Map<String, Integer> variablePositionen;
-	protected Map<ShaderTyp, Shader> shaderListe;
-	protected boolean geladen;
+    protected String name;
+    protected int program;
+    protected Map<String, Integer> variablePositionen;
+    protected Map<ShaderTyp, Shader> shaderListe;
+    protected boolean geladen;
 
-	public ShaderBlock(String name) {
-		this.geladen = false;
-		this.name = name;
-		this.variablePositionen = new HashMap<String, Integer>();
-		this.shaderListe = new HashMap<ShaderTyp, Shader>();
-	}
+    public ShaderBlock(String name) {
+        this.geladen = false;
+        this.name = name;
+        this.variablePositionen = new HashMap<String, Integer>();
+        this.shaderListe = new HashMap<ShaderTyp, Shader>();
+    }
 
-	public void erzeugeProgram(GL4 gl, boolean vertex, boolean fragment, boolean geometrie) {
-		for (ShaderTyp aktuellerTyp : ShaderTyp.values()) {
-			String endung = ShaderTyp.holEndung(aktuellerTyp);
-			File f = new File(Configuration.holShaderPfad() + this.name + "." + endung);
-			if(f.exists() && !f.isDirectory()) {
-				Shader shader;
-				shader = new Shader(aktuellerTyp, this.name);
-				shader.ladeShader(f);
-				setzShader(shader);
-			}
-		}
-		program = gl.glCreateProgram();
-		for (Map.Entry<ShaderTyp, Shader> shaderDaten : this.shaderListe.entrySet()) {
-			Shader sh = shaderDaten.getValue();
-			if (sh != null && sh.geladen()) {
-				try {
-					System.out.println("Bearbeite shader "+sh.holTyp().toString());
-					int shaderProgram = gl.glCreateShader(ShaderTyp.holGLTyp(sh.holTyp()));
-					sh.setzProgramID(shaderProgram);
-					gl.glShaderSource(shaderProgram, 1, sh.holInhalt(), null);
-					gl.glCompileShader(shaderProgram);
-					gl.glAttachShader(program, shaderProgram);
+    public void erzeugeProgram(GL4 gl, boolean vertex, boolean fragment, boolean geometrie) {
+        for (ShaderTyp aktuellerTyp : ShaderTyp.values()) {
+            String endung = ShaderTyp.holEndung(aktuellerTyp);
+            File f = new File(Configuration.holShaderPfad() + this.name + "." + endung);
+            if (f.exists() && !f.isDirectory()) {
+                Shader shader;
+                shader = new Shader(aktuellerTyp, this.name);
+                shader.ladeShader(f);
+                setzShader(shader);
+            }
+        }
+        program = gl.glCreateProgram();
+        for (Map.Entry<ShaderTyp, Shader> shaderDaten : this.shaderListe.entrySet()) {
+            Shader sh = shaderDaten.getValue();
+            if (sh != null && sh.geladen()) {
+                try {
+                    System.out.println("Bearbeite shader " + sh.holTyp().toString());
+                    int shaderProgram = gl.glCreateShader(ShaderTyp.holGLTyp(sh.holTyp()));
+                    sh.setzProgramID(shaderProgram);
+                    gl.glShaderSource(shaderProgram, 1, sh.holInhalt(), null);
+                    gl.glCompileShader(shaderProgram);
+                    gl.glAttachShader(program, shaderProgram);
                     printShaderlog(gl, shaderProgram);
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		gl.glLinkProgram(program);
-		gl.glValidateProgram(program);
-        printProgramlog(gl,program);
-	/*	IntBuffer intBuffer = IntBuffer.allocate(1);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        gl.glLinkProgram(program);
+        gl.glValidateProgram(program);
+        printProgramlog(gl, program);
+        /*	IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetProgramiv(program, GL_LINK_STATUS, intBuffer);
 		geladen = true;
 		if (intBuffer.get(0) != 1) {
@@ -81,7 +81,7 @@ public class ShaderBlock {
 			}
 			geladen = false;
 		}*/
-	}
+    }
 
     private void printShaderlog(GL4 gl, int shader) {
         IntBuffer intBuffer = Buffers.newDirectIntBuffer(1);
@@ -117,15 +117,15 @@ public class ShaderBlock {
         }
     }
 
-	public int holProgram() {
-		return program;
-	}
+    public int holProgram() {
+        return program;
+    }
 
-	public void setzVariable(String variablenName, Integer glPosition) {
-		this.variablePositionen.put(variablenName, glPosition);
-	}
+    public void setzVariable(String variablenName, Integer glPosition) {
+        this.variablePositionen.put(variablenName, glPosition);
+    }
 
-	private void setzShader(Shader shader) {
-		this.shaderListe.put(shader.holTyp(), shader);
-	}
+    private void setzShader(Shader shader) {
+        this.shaderListe.put(shader.holTyp(), shader);
+    }
 }

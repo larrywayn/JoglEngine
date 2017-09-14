@@ -13,8 +13,10 @@ public abstract class DrawObjekt {
     protected Geometrie mesh;
     protected Quaternion ausrichtung;
     protected Vektor4 standort;
-    public DrawObjekt(){
 
+    public DrawObjekt() {
+        ausrichtung = new Quaternion();
+        standort = new Vektor4();
     }
 
     public ShaderBlock holShader() {

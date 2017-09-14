@@ -5,28 +5,32 @@ import grundklassen.Geometrie;
 import klassen.GeometrieManager;
 import main.LarryEngineKern;
 
-public class Ebene extends Geometrie {
-    public Ebene(GeometrieManager mM) {
+public class Quad extends Geometrie {
+
+    public Quad(GeometrieManager mM) {
         super(mM);
         GL4 gl = this.mM.holGL();
         this.verticesPlain = new float[]{
--0.000000f, 1.000000f, 1.000000f,
- 0.000000f, -1.000000f, 1.000000f,
--0.000000f, 1.000000f, -1.000000f,
- 0.000000f, -1.000000f, -1.000000f
-    };
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f
+        };
+
         this.uvsPlain = new float[]{
- 0.9999f, 0.0001f,
- 0.0001f, 0.9999f,
- 0.0001f, 0.0001f,
- 0.9999f, 0.9999f};
-          this.normalenPlain = new float[]{
-              -1.0000f, 0.0000f, 1.0000f,
-              1.0000f, 0.0000f, 1.0000f,
-              -1.0000f, 0.0000f, -1.0000f,
-              1.0000f, 0.0000f, -1.0000f
-          };
-        this.indiciesPlain = new int[]{1, 2, 0, 1, 3, 2};
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                1.0f, 1.0f,
+                0.0f, 1.0f};
+        this.normalenPlain = new float[]{
+            -1.0000f, 0.0000f, 1.0000f,
+            1.0000f, 0.0000f, 1.0000f,
+            -1.0000f, 0.0000f, -1.0000f,
+            1.0000f, 0.0000f, -1.0000f
+        };
+        this.indiciesPlain = new int[]{
+            0, 1, 2,
+            0, 2, 3};
         int[] vboHandles = new int[4];
         gl.glGenBuffers(4, vboHandles, 0);
         this.vertices = vboHandles[0];
@@ -37,7 +41,7 @@ public class Ebene extends Geometrie {
 
         this.erzeugeBuffer(this.verticesPlain);
         LarryEngineKern.createBuffer(gl, this.vertices, this.erzeugeBuffer(this.verticesPlain));
-        LarryEngineKern.createBuffer(gl, this.uvs, this.erzeugeBuffer(this.uvsPlain));   
+        LarryEngineKern.createBuffer(gl, this.uvs, this.erzeugeBuffer(this.uvsPlain));
         LarryEngineKern.createBuffer(gl, this.normalen, this.erzeugeBuffer(this.normalenPlain));
         LarryEngineKern.createBuffer(gl, this.indicies, this.erzeugeBuffer(this.indiciesPlain));
     }

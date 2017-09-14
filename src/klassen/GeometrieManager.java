@@ -22,7 +22,9 @@ public class GeometrieManager {
     }
     
     public Geometrie holGeometrie(String dateiName){
-        return this.holGeometrie(arM.get(dateiName));
+        Integer xx = arM.get(dateiName);
+        System.out.println("XX: "+xx);
+        return this.holGeometrie(xx);
     }
        
     public GeometrieManager(GL4 gl) {
@@ -33,7 +35,7 @@ public class GeometrieManager {
         this.aid = 0;
     }
 
-    public synchronized void ladeGeometrie(String dateipfad) {
+    public synchronized int ladeGeometrie(String dateipfad) {
         int caid = ++aid;
         if (!arM.containsKey(dateipfad)) {
             Geometrie geom = new Geometrie(this);
@@ -43,6 +45,7 @@ public class GeometrieManager {
             thread.start();
             arG.put(caid, geom);
         }
+        return caid;
     }
 
     public GL4 holGL() {
@@ -64,6 +67,7 @@ public class GeometrieManager {
 
     public synchronized void speichereMesh(Integer geomID) {
         clqT.add(geomID);
+        legeGeometrieAn();
         System.out.println("Geometrie angefügt");
     }
 }
