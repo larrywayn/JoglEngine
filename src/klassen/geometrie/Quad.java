@@ -6,22 +6,20 @@ import klassen.GeometrieManager;
 import main.LarryEngineKern;
 
 public class Quad extends Geometrie {
-
     public Quad(GeometrieManager mM) {
         super(mM);
         GL4 gl = this.mM.holGL();
         this.verticesPlain = new float[]{
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f
+            -1.00f, 1.00f, 0.0f,
+            -1.00f, -1.00f, 0.0f,
+            1.00f, -1.00f, 0.0f,
+            1.00f, 1.00f, 0.0f
         };
-
         this.uvsPlain = new float[]{
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-                1.0f, 1.0f,
-                0.0f, 1.0f};
+            0.0f, 1.0f,
+            0f, 0.0f,
+            1f, 0.0f,
+            1.0f, 1.0f};
         this.normalenPlain = new float[]{
             -1.0000f, 0.0000f, 1.0000f,
             1.0000f, 0.0000f, 1.0000f,
@@ -38,8 +36,6 @@ public class Quad extends Geometrie {
         this.normalen = vboHandles[2];
         this.indicies = vboHandles[3];
         vboHandles = null;
-
-        this.erzeugeBuffer(this.verticesPlain);
         LarryEngineKern.createBuffer(gl, this.vertices, this.erzeugeBuffer(this.verticesPlain));
         LarryEngineKern.createBuffer(gl, this.uvs, this.erzeugeBuffer(this.uvsPlain));
         LarryEngineKern.createBuffer(gl, this.normalen, this.erzeugeBuffer(this.normalenPlain));

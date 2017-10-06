@@ -31,8 +31,8 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         this.rotY = 0;
         this.lastX = 0;
         this.lastY = 0;
-        this.mouseFaktorX = 3.0f;
-        this.mouseFaktorY = 3.0f;
+        this.mouseFaktorX = 5.0f;
+        this.mouseFaktorY = 5.0f;
         //     Quaternion spielerQ = this.spieler.holAusrichtung();
         //    Quaternion kameraQ = this.kamera.holAusrichtung();
         //   Quaternion kameraNeuQQ2 = spielerQ.kopiere();
@@ -63,70 +63,31 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         if (this.bewegeRechts) {
             this.spieler.bewegeRechts();
         }
-        Vektor4 targetPosition = this.spieler.holStandort();
-        Vektor4 tmpv = this.spieler.holAusrichtung().holVorwaerts().kopiere();
-        tmpv.skaliere(-7.0f);
-        Quaternion targetRotation = this.spieler.holAusrichtung().kopiere();
-
-                        System.out.println("-------------");System.out.print("TR: ");
-                        targetRotation.ausgabe();
-        Quaternion tmpQuaternion = Quaternion.createFromAxisAngle(new Vektor4(0f, 1f, 0f, 0f), this.rotX);
-        System.out.print("TMP: ");tmpQuaternion.ausgabe();
-        tmpQuaternion.multipliziereQ(targetRotation);
-        System.out.print("TR: ");tmpQuaternion.ausgabe();
-        //targetRotation.normalisiere();
-//THREE.Quaternion.slerp(this.camera.quaternion, targetRotation, qm, 0.07);
-        Quaternion qm = Quaternion.slerp(this.kamera.holAusrichtung(),tmpQuaternion,  0.7);
-       // qm.normalisiere();      
-       System.out.println( this.rotX);System.out.print("QM: ");
-       qm.ausgabe();
-        this.kamera.setzAusrichtung(qm);
-        this.kamera.setzStandort(targetPosition.subtrahiereV4(tmpv));
-        /*   Quaternion spielerQ = this.spieler.holAusrichtung();
-        Quaternion kameraQ = this.kamera.holAusrichtung();
-
+        this.rotY = ((this.rotY > 18) ? 18 : ((this.rotY < -28) ? -28 : this.rotY));
+        Quaternion spielerQ = this.spieler.holAusrichtung().kopiere();
+        Vektor4 spielerV = (this.spieler.holStandort().kopiere());
         Vektor4 zAchseSpieler = spielerQ.holVertikal();
         Quaternion spielerRotXQ = Quaternion.createFromAxisAngle(zAchseSpieler, this.rotX);
         Quaternion spielerNeuQ = spielerRotXQ.multipliziereQ(spielerQ);
-        spielerNeuQ.normalisiere();
-        zAchseSpieler = spielerNeuQ.holVertikal();
-        Vektor4 xAchseKamera = spielerQ.holSeitwerts();
-        Quaternion kameraNeuQQ2 = kameraQ.kopiere();
-        kameraNeuQQ2.konjugante();
-        zAchseSpieler = kameraNeuQQ2.multipliziereV(zAchseSpieler);
-        xAchseKamera = kameraNeuQQ2.multipliziereV(xAchseKamera);
-        Quaternion kameraRotXQ = Quaternion.createFromAxisAngle(zAchseSpieler, this.rotX);
-        kameraRotXQ.normalisiere();
-        Quaternion kameraNeuQ = kameraQ.multipliziereQ(kameraRotXQ);
-        Quaternion kameraRotXQQ = Quaternion.createFromAxisAngle(xAchseKamera, this.rotY);
-        kameraRotXQQ.normalisiere();
-        kameraNeuQ = kameraNeuQ.multipliziereQ(kameraRotXQQ);
-        kameraNeuQ.normalisiere();
-        //         Quaternion targetRotation = this.spieler.holAusrichtung().kopiere();
-        //Quaternion tmpQuaternion = Quaternion.createFromAxisAngle(new Vektor4(0f, 1f, 0f, 1f), 180f * (float) (Math.PI / 180f));
-        //targetRotation.multipliziereQ(tmpQuaternion);
-        //targetRotation.normalisiere();
-
-        //Quaternion qm = Quaternion.slerp(this.kamera.holAusrichtung(), targetRotation, 0.7);
-        //qm.normalisiere();
-        //   this.kamera.setzAusrichtung(qm);
-        this.kamera.setzAusrichtung(kameraNeuQ);
+        Quaternion spielerQI = spielerNeuQ.kopiere();
+        spielerQI.invertiere();
         this.spieler.setzAusrichtung(spielerNeuQ);
-
-        Vektor4 tmp = this.spieler.holStandort().kopiere();
-        Quaternion kameraNeuQQ = kameraNeuQ.kopiere();
-        kameraNeuQQ.konjugante();
-        Vektor4 abstand = new Vektor4(0, 5, 10, 1.0f);
-        tmp = kameraNeuQQ.multipliziereV(tmp);
-        tmp = tmp.addiereV4(abstand);
-        this.kamera.setzStandort(tmp);*/
-
+        //Quaternion.slerp( spielerQI,this.kamera.holAusrichtung(), 0.02) 
+        Vektor4 xAchseSpieler = spielerQI.holSeitwerts();
+        Quaternion spielerRotYQ = Quaternion.createFromAxisAngle(xAchseSpieler, this.rotY);
+        Quaternion spielerQIQ = spielerRotYQ.multipliziereQ(spielerQI);
+        this.kamera.setzAusrichtung(spielerQIQ);
+        Quaternion spielerQIQI = spielerQIQ.kopiere();
+        spielerQIQI.invertiere();
+        spielerV = spielerQIQI.multipliziereV(spielerV);
+        Vektor4 vor = new Vektor4(0f, 4f, 8f, 1);
+        spielerV = spielerV.addiereV4(vor);
+        this.kamera.setzStandort(spielerV);
         this.bewegeVorwaerts = false;
         this.bewegeRueckwaerts = false;
         this.bewegeLinks = false;
         this.bewegeRechts = false;
-       // this.rotX = 0;
-      //  this.rotY = 0;
+        this.rotX = 0;
     }
 
     protected int[] relativeMousePosition(int mouseXScreen, int mouseYScreen) {
@@ -191,8 +152,8 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     public void mouseReleased(MouseEvent e) {
         this.lastX = 0;
         this.lastY = 0;
-      //  this.rotX = 0;
-     //   this.rotY = 0;
+        //  this.rotX = 0;
+        //   this.rotY = 0;
     }
 
     @Override
@@ -217,8 +178,8 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         float deltaY = newY - this.lastY;
         this.lastX = newX;
         this.lastY = newY;
-        this.rotX -= deltaX;
-        this.rotY -= deltaY;
+        this.rotX += deltaX;
+        this.rotY += deltaY;
 
         //   System.out.println("------------");
         //    System.out.println("------------");

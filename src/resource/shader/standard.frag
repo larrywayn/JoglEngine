@@ -26,7 +26,7 @@ void main(){
            vec4 colorT = texture2D(texture0, vUV);
            color = vec4(brightness * vec3(colorT.rgb),1.0f);
        }else{
-           color = vec4(brightness * vec3(0.0f,0.5f,0.5f),1.0f);
+           color = vec4(brightness * vec3(0.0f,0.5f,0.9f),1.0f);
        }
    }
 }

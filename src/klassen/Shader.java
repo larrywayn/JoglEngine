@@ -36,6 +36,7 @@ public class Shader {
 				this.inhalt = new String[] { sb.toString() };
 				sr.close();
 				this.geladen = true;
+                                System.out.println("Shader geladen: " + this.name+":"+this.typ);
 				return true;
 			} catch (Exception e) {
 				return false;

@@ -44,7 +44,6 @@ public class ShaderBlock {
             Shader sh = shaderDaten.getValue();
             if (sh != null && sh.geladen()) {
                 try {
-                    System.out.println("Bearbeite shader " + sh.holTyp().toString());
                     int shaderProgram = gl.glCreateShader(ShaderTyp.holGLTyp(sh.holTyp()));
                     sh.setzProgramID(shaderProgram);
                     gl.glShaderSource(shaderProgram, 1, sh.holInhalt(), null);
@@ -63,24 +62,7 @@ public class ShaderBlock {
         gl.glLinkProgram(program);
         gl.glValidateProgram(program);
         printProgramlog(gl, program);
-        /*	IntBuffer intBuffer = IntBuffer.allocate(1);
-		gl.glGetProgramiv(program, GL_LINK_STATUS, intBuffer);
-		geladen = true;
-		if (intBuffer.get(0) != 1) {
-			gl.glGetProgramiv(program, GL_INFO_LOG_LENGTH, intBuffer);
-			int size = intBuffer.get(0);
-			System.err.println("Program link error: ");
-			if (size > 0) {
-				ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-				gl.glGetProgramInfoLog(program, size, intBuffer, byteBuffer);
-				for (byte b : byteBuffer.array()) {
-					System.err.print((char) b);
-				}
-			} else {
-				System.out.println("Unknown ShaderProgramm Error");
-			}
-			geladen = false;
-		}*/
+        System.out.println("Shader komplett: " + this.name);
     }
 
     private void printShaderlog(GL4 gl, int shader) {
@@ -115,6 +97,18 @@ public class ShaderBlock {
             System.out.println(message);
             throw new IllegalStateException(message);
         }
+    }
+
+    public void debug(GL4 gl) {
+        System.out.println("Shader Debug: " + this.name);
+        // printShaderlog(gl, this.);
+        printProgramlog(gl, this.program);
+        for (Map.Entry<String, Integer> debugDaten : this.variablePositionen.entrySet()) {
+            int debugInt = debugDaten.getValue();
+            String debugString = debugDaten.getKey();
+            System.out.println("W: " + debugString + " : " + debugInt);
+        }
+
     }
 
     public int holProgram() {

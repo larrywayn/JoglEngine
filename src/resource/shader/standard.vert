@@ -29,5 +29,5 @@ void main(void) {
     fragVert = position;
     vUV = uvs;
     //gl_Position  = projMat * vec4(viewPos,1.0) * vec4(vecMult(viewQuat ,modelPos),1.0) * vec4(vecMult(worldModelQuat  , position), 1.0);
-    gl_Position = projMat * camMat * modelMat * vec4(position, 1.0f);
+    gl_Position =   projMat * camMat *  modelMat *  vec4(position, 1.0f);
 }

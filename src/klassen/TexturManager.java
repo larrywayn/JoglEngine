@@ -8,6 +8,7 @@ import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import grundklassen.Geometrie;
+import klassen.Textur;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -19,6 +20,7 @@ public class TexturManager {
 
     private ConcurrentHashMap<Integer, Texture> arT;
     private ConcurrentHashMap<String, Integer> arM;
+    private ConcurrentHashMap<String, Textur> arMOT;
     private ConcurrentHashMap<Integer, Geometrie> arGTMP;
     private ConcurrentLinkedQueue<Textur> clqT;
     private GL4 gl;
@@ -26,6 +28,7 @@ public class TexturManager {
 
     public TexturManager(GL4 gl) {
         this.arT = new ConcurrentHashMap<>();
+        this.arMOT = new ConcurrentHashMap<>();
         this.arGTMP = new ConcurrentHashMap<>();
         this.arM = new ConcurrentHashMap<>();
         this.clqT = new ConcurrentLinkedQueue<>();
@@ -73,6 +76,7 @@ public class TexturManager {
                 int texID = arT.size() + 1;
                 arM.put(t.holDateipfad(), texID);
                 arT.put(texID, textur);
+                arMOT.put(t.holDateipfad(), t);
                 arGTMP.remove(oid);
                 geom.setzTextur(textur);
                 System.out.println("Textur gesetzt " + textur.toString() + " " + geom.toString());
@@ -83,5 +87,20 @@ public class TexturManager {
     public synchronized void speichereTextur(Textur textur) {
         clqT.add(textur);
         System.out.println("Textur angefügt");
+    }
+
+    public synchronized Texture holTextur(String texturName) {
+        if (arMOT.containsKey(texturName)) {
+            Textur textur = arMOT.get(texturName);
+            return textur.holGLTexture();
+        }
+        return null;
+    }
+    
+        public synchronized int holTexturID(String texturName) {
+        if (arM.containsKey(texturName)) {
+            return arM.get(texturName);
+        }
+        return -1;
     }
 }

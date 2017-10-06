@@ -5,7 +5,7 @@ public class Configuration {
     private final static float sichtfeld = 45.0f;
     private final static float near = 1.0f;
     private final static float far = 100000.0f;
-    private final static int fensterBreite = 1100;
+    private final static int fensterBreite = 1024;
     private final static int fensterHoehe = 400;
     private final static String titel = "MMO Game 1.0";
     private final static int framerate = 120;
