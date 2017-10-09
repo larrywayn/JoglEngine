@@ -57,6 +57,22 @@ public class Geometrie implements Runnable {
         return this.indicies;
     }
 
+    public boolean hatVertices() {
+        return (this.verticesPlain != null && this.verticesPlain.length > 0);
+    }
+
+    public boolean hatNormalen() {
+        return (this.normalenPlain != null && this.normalenPlain.length > 0);
+    }
+
+    public boolean hatTexturenUV() {
+        return (this.uvsPlain != null && this.uvsPlain.length > 0);
+    }
+
+    public boolean hatIndizies() {
+        return (this.indiciesPlain != null && this.indiciesPlain.length > 0);
+    }
+
     public float[] holVerticesPlain() {
         return this.verticesPlain;
     }
@@ -149,8 +165,7 @@ public class Geometrie implements Runnable {
         Scanner sc = new Scanner(file);
         String readLine = null;
         String line = null;
-        
-        
+
         while (sc.hasNext()) {
             readLine = sc.nextLine();
             readLine = readLine.trim();

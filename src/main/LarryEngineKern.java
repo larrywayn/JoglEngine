@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import klassen.geometrie.Cone;
+import klassen.geometrie.Flex;
 import klassen.geometrie.Quad;
 
 public class LarryEngineKern extends GLJPanel implements GLEventListener {
@@ -41,6 +42,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     private int height;
     private TexturManager tm;
     private ObjectManager om;
+    private MapManager mm;
     private GeometrieManager gm;
     private Random zufallsGenerator;
     private FrameRenderBufferManager frm;
@@ -71,11 +73,9 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         gl.glBindBuffer(GL_ARRAY_BUFFER, framebufferQuad.holVertices());
         gl.glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         gl.glEnable(GL_TEXTURE_2D);
-
         gl.glActiveTexture(GL_TEXTURE0);
         gl.glBindTexture(GL_TEXTURE_2D, scene3D.holTexturID());
         gl.glUniform1i((gl.glGetUniformLocation(this.sb.holProgram(), "texture0")), 0);
-
         gl.glActiveTexture(GL_TEXTURE1);
         gl.glBindTexture(GL_TEXTURE_2D, sceneOverlay.holTexturID());
         gl.glUniform1i((gl.glGetUniformLocation(this.sb.holProgram(), "texture1")), 1);
@@ -93,17 +93,11 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.steuerung.aktualisiereKamera();
         gl.glBindFramebuffer(GL_FRAMEBUFFER, scene3D.holFramebufferID());
         gl.glClearColor(0.2f, 0.5f, 0.2f, 0.0f);
-        //   gl.glClearDepth(1.0f);
-        // gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
-        gl.glViewport(0, 0, this.width, this.height);//TODO FRAMEBUFFER WIDTH HEIGHT angeben
+        gl.glViewport(0, 0, this.width, this.height);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthMask(true);
-        //gl.glDepthFunc(GL_LEQUAL);
-        // gl.glDepthRange(0.0f, 1.0f);
         gl.glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        // gl.glFrontFace(GL_CW);
-        // gl.glCullFace(GL4.GL_FRONT_AND_BACK); 
         Map mp = this.om.holObjectListe(objektListe);
         if (mp != null) {
             Iterator it = mp.entrySet().iterator();
@@ -141,7 +135,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         }
                         gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.holIndizies());
                         float[] nnn = {1.0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f};
-                         gl.glUniform2f((gl.glGetUniformLocation(program, "posS")), this.width, this.height);
+                        gl.glUniform2f((gl.glGetUniformLocation(program, "posS")), this.width, this.height);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "projMat")), 1, false, this.kamera.holOrthogonal(), 0);
                         //gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "camMat")), 1, false, this.kamera.holMatrix(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "modelMat")), 1, false, matrix, 0);
@@ -157,7 +151,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         }
                         gl.glUseProgram(0);
                     }
-
                 }
             }
         }
@@ -166,19 +159,18 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
 
     private void drawScenePerspektive(GL4 gl, Framebuffer scene3D, String objektListe) {
         this.steuerung.aktualisiereKamera();
+
         gl.glBindFramebuffer(GL_FRAMEBUFFER, scene3D.holFramebufferID());
         gl.glClearColor(0.5f, 0.2f, 0.2f, 1.0f);
         //   gl.glClearDepth(1.0f);
         // gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
-        gl.glViewport(0, 0, this.width, this.height);//TODO FRAMEBUFFER WIDTH HEIGHT angeben
+        gl.glViewport(0, 0, this.width, this.height);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthMask(true);
         //gl.glDepthFunc(GL_LEQUAL);
         // gl.glDepthRange(0.0f, 1.0f);
         gl.glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        // gl.glFrontFace(GL_CW);
-        // gl.glCullFace(GL4.GL_FRONT_AND_BACK); 
         Map mp = this.om.holObjectListe(objektListe);
         if (mp != null) {
             Iterator it = mp.entrySet().iterator();
@@ -191,15 +183,19 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         float[] matrix = oo.holAusrichtung().erzeugeMatrix(oo.holStandort());
                         int program = oo.holShader().holProgram();
                         gl.glUseProgram(program);
-                        gl.glEnableVertexAttribArray(0);
-                        gl.glBindBuffer(GL_ARRAY_BUFFER, mesh.holVertices());
-                        gl.glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-                        gl.glEnableVertexAttribArray(1);
-                        gl.glBindBuffer(GL_ARRAY_BUFFER, mesh.holNormalen());
-                        gl.glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+                        if (mesh.hatVertices()) {
+                            gl.glEnableVertexAttribArray(0);
+                            gl.glBindBuffer(GL_ARRAY_BUFFER, mesh.holVertices());
+                            gl.glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+                        }
+                        if (mesh.hatNormalen()) {
+                            gl.glEnableVertexAttribArray(1);
+                            gl.glBindBuffer(GL_ARRAY_BUFFER, mesh.holNormalen());
+                            gl.glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+                        }
                         int uvbuf = mesh.holTexturenUV();
                         Texture t = mesh.holTextur();
-                        if (uvbuf != 0 && t != null) {
+                        if (mesh.hatTexturenUV() && uvbuf != 0 && t != null) {
                             gl.glEnable(GL_TEXTURE_2D);
                             gl.glActiveTexture(GL_TEXTURE0);
                             t.enable(gl);
@@ -213,24 +209,27 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         } else {
                             gl.glUniform1f((gl.glGetUniformLocation(program, "isTex")), 0.0f);
                         }
-                        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.holIndizies());
-                        float[] nnn = {1.0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f};
+
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "projMat")), 1, false, this.kamera.holPerspektive(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "camMat")), 1, false, this.kamera.holMatrix(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "modelMat")), 1, false, matrix, 0);
-                        gl.glDrawElements(GL_TRIANGLES, mesh.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
-                        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                        if (mesh.hatIndizies()) {
+                            gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.holIndizies());
+                            gl.glDrawElements(GL_TRIANGLES, mesh.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
+                            gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                        }
                         gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
                         gl.glDisableVertexAttribArray(0);
-                        gl.glDisableVertexAttribArray(1);
-                        if (uvbuf != 0 && t != null) {
+                        if (mesh.hatNormalen()) {
+                            gl.glDisableVertexAttribArray(1);
+                        }
+                        if (mesh.hatTexturenUV() && uvbuf != 0 && t != null) {
                             t.disable(gl);
                             gl.glDisable(GL_TEXTURE_2D);
                             gl.glDisableVertexAttribArray(2);
                         }
                         gl.glUseProgram(0);
                     }
-
                 }
             }
         }
@@ -265,11 +264,15 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.sbS.erzeugeProgram(this.gl, true, true, false);
         this.sbO = new ShaderBlock("simple");
         this.sbO.erzeugeProgram(this.gl, true, true, false);
-
+  
+        ShaderBlock toon = new ShaderBlock("toon");
+        toon.erzeugeProgram(this.gl, true, true, false);
+        
         this.tm = new TexturManager(this.gl);
         this.gm = new GeometrieManager(this.gl);
         this.om = new ObjectManager(this.gl, this.gm, this.sbS);
         this.frm = new FrameRenderBufferManager(this.gl);
+        this.mm = new MapManager(this.gl, this.frm);
 
         this.frm.erzeugeFramebuffer("Hauptbuffer", this.width, this.height);
         this.frm.erzeugeFramebuffer("Overlay", this.width, this.height);
@@ -286,25 +289,36 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.mainCone = new Cone(this.gm);
         this.mainCone.setzTexturName("grid.jpg");
 
-        // for (int i = 1000; i >= 0; --i) {
-        this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 0f, 0f, 1.0f), this.sbS);
-        this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 20f, 1.0f), this.sbS);
-        this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 0f, 1.0f), this.sbS);
-        this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 0f, 20f, 1.0f), this.sbS);
-        this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(10f, 0f, 20f, 1.0f), this.sbS);
-        //}
+        // for (int i = 1; i >= 0; --i) {
+        Flex f = this.mm.createMap(this.gm, "Some Seed");
+        //  }
+        Quaternion g = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+        g.setzSkalierung(2f, 2f, 2f);
+        this.om.erzeugeObject(f, "main",g, new Vektor4(0, 0, 0, 1.0f), this.sbS);
 
-         for (int i = 1000; i >= 0; i=i-100 ) {
-             for (int j = 500; j >= 0; j=j-100) {
+        for (int i = 10000; i >= 0; --i) {
+            Quaternion qq = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f); 
+            float scal = zufallsZahl(3, 30);
+            float scalw = zufallsZahl(3, 10);
+            qq.setzSkalierung(scalw, scalw, scalw);
+            this.om.erzeugeObject(CONE, "main", qq , new Vektor4(zufallsZahl(-1000, 1000), scalw, zufallsZahl(-1000, 1000), 1.0f), toon);
+            //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 20f, 1.0f), this.sbS);
+            //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 0f, 1.0f), this.sbS);
+            //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 0f, 20f, 1.0f), this.sbS);
+            //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(10f, 0f, 20f, 1.0f), this.sbS);
+        }
+
+        for (int i = 1000; i >= 0; i = i - 100) {
+            for (int j = 500; j >= 0; j = j - 100) {
                 Quaternion qq = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-                qq.setzSkalierung( zufallsZahl(1, 5), zufallsZahl(1, 5), 0);
-        this.om.erzeugeObject(DICE, "overlay", qq, new Vektor4(i * zufallsZahl(1, 5), j * zufallsZahl(1, 5), 0f, 1.0f), this.sbO);
-       // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(1000f, 380f, 0f, 1.0f), this.sbO);
-       // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(1000f, 0f, 0f, 1.0f), this.sbO);
-     //   this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 380f, 0f, 1.0f), this.sbO);
-        //this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(500f, 200f, 0f, 1.0f), this.sbO);
-          }
-         }
+                qq.setzSkalierung(zufallsZahl(1, 5), zufallsZahl(1, 5), 0);
+                this.om.erzeugeObject(DICE, "overlay", qq, new Vektor4(i * zufallsZahl(1, 5), j * zufallsZahl(1, 5), 0f, 1.0f), this.sbO);
+                // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(1000f, 380f, 0f, 1.0f), this.sbO);
+                // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(1000f, 0f, 0f, 1.0f), this.sbO);
+                // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 380f, 0f, 1.0f), this.sbO);
+                // this.om.erzeugeObject(DICE, "overlay", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(500f, 200f, 0f, 1.0f), this.sbO);
+            }
+        }
         this.spieler = new Spieler();
         this.spieler.setzMesh(this.gm.erzeuge(DICE));
         this.spieler.setzShader(sbS);
@@ -314,7 +328,8 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         this.steuerung = new Steuerung(this, this.kamera, this.spieler);
         this.addKeyListener(this.steuerung);
         this.addMouseMotionListener(this.steuerung);
-        this.addMouseListener(this.steuerung);
+        this.addMouseListener(this.steuerung); 
+        this.addMouseWheelListener(this.steuerung);
     }
 
     @Override

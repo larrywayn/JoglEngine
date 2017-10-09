@@ -58,18 +58,12 @@ public class FrameRenderBufferManager {
         return renHandles[0];
     }
 
-    private int erzeugeAbedoTextur(int width, int height) {
+    public int erzeugeAbedoTextur(int width, int height) {
         this.gl.glEnable(GL_TEXTURE_2D);
         int[] texHandles = new int[1];
         this.gl.glGenTextures(1, texHandles, 0);
         this.gl.glBindTexture(GL_TEXTURE_2D, texHandles[0]);
         this.gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-        //  this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //  this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //         this.gl.glTexParameteri(GL_TEXTURE_2D, GL4.GL_TEXTURE_BASE_LEVEL, 0);
-        // this.gl.glTexParameteri(GL_TEXTURE_2D, GL4.GL_TEXTURE_MAX_LEVEL, 0);
-        //    this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        // this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         this.gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         this.gl.glDisable(GL_TEXTURE_2D);

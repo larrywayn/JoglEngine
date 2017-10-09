@@ -11,7 +11,7 @@ uniform vec3 colorIn;
 layout(location = 0) out vec4 color;
 
 void main(){
-    mat3 mm = mat3(camMat);
+    mat3 mm = mat3(camMat * modelMat);
     mm = transpose(inverse(mm));
     vec3 normal = normalize(mm * vNormal);
     vec3 fragPosition = vec3(modelMat * vec4(fragVert, 1.0f));

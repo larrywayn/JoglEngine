@@ -7,6 +7,7 @@ package klassen;
 
 import com.jogamp.opengl.GL4;
 import grundklassen.DrawObjekt;
+import grundklassen.Geometrie;
 import grundklassen.GeometrieTypen;
 import static grundklassen.GeometrieTypen.CONE;
 import static grundklassen.GeometrieTypen.QUAD;
@@ -87,6 +88,18 @@ public class ObjectManager {
             Objekt3D tmpO = new Objekt3D();
             tmpO.setzShader(shaderBlock);
             tmpO.setzMesh(gm.erzeuge(geometrieTyp));
+            tmpO.setzStandort(vektor4);
+            tmpO.setzAusrichtung(quaternion);
+            objektlist.put(("Object" + (++ObjectManager.aid)), tmpO);
+        }
+    }
+
+    public void erzeugeObject(Geometrie f, String listname, Quaternion quaternion, Vektor4 vektor4, ShaderBlock shaderBlock) {
+         if (drawlist.containsKey(listname)) {
+            ConcurrentHashMap<String, DrawObjekt> objektlist = this.holObjectListe(listname);
+            Objekt3D tmpO = new Objekt3D();
+            tmpO.setzShader(shaderBlock);
+            tmpO.setzMesh(f);
             tmpO.setzStandort(vektor4);
             tmpO.setzAusrichtung(quaternion);
             objektlist.put(("Object" + (++ObjectManager.aid)), tmpO);

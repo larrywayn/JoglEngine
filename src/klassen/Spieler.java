@@ -9,11 +9,19 @@ public class Spieler extends Objekt3D {
 
     protected Physik physik;
     protected Vektor4 tmp;
-    protected float faktor;
+    protected float faktorX;
+    protected float faktorY;
 
     public Spieler() {
-        this(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0.0f, -2.0f, -8.0f, 1.0f), new Physik(0.82f, 50.0f));
-        this.faktor = 0.4f;
+        this(new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0.0f, 0.0f, 0.0f, 1.0f), new Physik(0.82f, 50.0f));
+        this.faktorX = 0.5f;
+        this.faktorY = 0.3f;
+
+        Vektor4 spielerVn = (this.holStandort().kopiere());
+        Vektor4 vor2 = new Vektor4(0f, 8f, 0f, 1);
+        spielerVn = spielerVn.addiereV4(vor2);
+        this.setzStandort(spielerVn);
+
     }
 
     public Spieler(Quaternion q, Vektor4 v, Physik p) {
@@ -21,7 +29,8 @@ public class Spieler extends Objekt3D {
         this.setzAusrichtung(q);
         this.setzStandort(v);
         this.physik = p;
-        this.faktor = 0.4f;
+        this.faktorX = 0.5f;
+        this.faktorY = 0.3f;
     }
 
     /*  @Override
@@ -38,7 +47,7 @@ public class Spieler extends Objekt3D {
     }
 
     public void bewegeVorwaerts() {
-        tmp = new Vektor4(0.0f, 0.0f, -this.faktor, 1.0f);
+        tmp = new Vektor4(0.0f, 0.0f, -this.faktorX, 1.0f);
         //Quaternion a = ausrichtung.kopiere();
         //a.invertiere();
         ausrichtung.invertiere();
@@ -48,7 +57,7 @@ public class Spieler extends Objekt3D {
     }
 
     public void bewegeRueckwaerts() {
-        tmp = new Vektor4(0.0f, 0.0f, this.faktor, 1.0f);
+        tmp = new Vektor4(0.0f, 0.0f, this.faktorX, 1.0f);
         ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
@@ -56,7 +65,7 @@ public class Spieler extends Objekt3D {
     }
 
     public void bewegeLinks() {
-        tmp = new Vektor4(-this.faktor, 0.0f, 0.0f, 1.0f);
+        tmp = new Vektor4(-this.faktorY, 0.0f, 0.0f, 1.0f);
         ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
@@ -64,10 +73,20 @@ public class Spieler extends Objekt3D {
     }
 
     public void bewegeRechts() {
-        tmp = new Vektor4(this.faktor, 0.0f, 0.0f, 1.0f);
+        tmp = new Vektor4(this.faktorY, 0.0f, 0.0f, 1.0f);
         ausrichtung.invertiere();
         tmp = ausrichtung.multipliziereV(tmp);
         this.standort = this.standort.addiereV4(tmp);
         ausrichtung.invertiere();
+    }
+
+    public void bewegeNormal() {
+        this.faktorX = 0.5f;
+        this.faktorY = 0.3f;
+    }
+
+    public void bewegeSchneller() {
+        this.faktorX = 1.5f;
+        this.faktorY = 0.6f;
     }
 }

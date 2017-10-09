@@ -21,17 +21,17 @@ public class Kamera {
         this.ausrichtung = ausrichtung;
         this.standort = standort;
         this.aspekt = aspekt;
-       // alpha°*pi/180°
-       float radians = (float)((Configuration.holSichtfeld()*Math.PI)/180.0f);
+        // alpha°*pi/180°
+        float radians = (float) ((Configuration.holSichtfeld() * Math.PI) / 180.0f);
         this.perspektive = this.erzeugePerspektive(radians, Configuration.holNear(), Configuration.holFar());
-        this.orthogonal = this.erzeugeOrthogonal(Configuration.holFensterBreite(),Configuration.holFensterHoehe(), Configuration.holNear(), Configuration.holFar());
+        this.orthogonal = this.erzeugeOrthogonal(Configuration.holFensterBreite(), Configuration.holFensterHoehe(), Configuration.holNear(), Configuration.holFar());
     }
 
     public void setzAspekt(float aspekt) {
-        this.aspekt = aspekt; 
-        float radians = (float)((Configuration.holSichtfeld()*Math.PI)/180.0f);
+        this.aspekt = aspekt;
+        float radians = (float) ((Configuration.holSichtfeld() * Math.PI) / 180.0f);
         this.perspektive = this.erzeugePerspektive(radians, Configuration.holNear(), Configuration.holFar());
-        this.orthogonal = this.erzeugeOrthogonal(Configuration.holFensterBreite(),Configuration.holFensterHoehe(), Configuration.holNear(), Configuration.holFar());
+        this.orthogonal = this.erzeugeOrthogonal(Configuration.holFensterBreite(), Configuration.holFensterHoehe(), Configuration.holNear(), Configuration.holFar());
     }
 
     protected float[] erzeugePerspektive(float fieldOfViewInRadians, float near, float far) {
@@ -44,19 +44,19 @@ public class Kamera {
     }
 
     protected float[] erzeugeOrthogonal(int viewport_width, int viewport_height, float near, float far) {
-      //  near = 10.0f;
-       // far = -10.0f;
-       System.out.println("Aspekt: "+this.aspekt);
+        //  near = 10.0f;
+        // far = -10.0f;
+        System.out.println("Aspekt: " + this.aspekt);
         float right = this.aspekt;//(viewport_width);
         float left = -this.aspekt;
-        float top =  1.0f;//(viewport_height);
+        float top = 1.0f;//(viewport_height);
         float bottom = -1.0f;
-    return new float[]{
+        return new float[]{
             2.0f / (right - left), 0.0f, 0.0f, (-((right + left) / (right - left))),
             0.0f, 2.0f / (top - bottom), 0.0f, (-((top + bottom) / (top - bottom))),
             0.0f, 0.0f, -2.0f / (far - near), (-((far + near) / (far - near))),
             0.0f, 0.0f, 0.0f, 1.0f};
-        
+
         /*
         return new float[]{
         2.0f / (right - left),   0.0f, 0.0f, 0.0f,
