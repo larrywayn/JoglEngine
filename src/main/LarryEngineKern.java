@@ -296,12 +296,12 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         g.setzSkalierung(2f, 2f, 2f);
         this.om.erzeugeObject(f, "main",g, new Vektor4(0, 0, 0, 1.0f), this.sbS);
 
-        for (int i = 10000; i >= 0; --i) {
+        for (int i = 15000; i >= 0; --i) {
             Quaternion qq = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f); 
             float scal = zufallsZahl(3, 30);
             float scalw = zufallsZahl(3, 10);
             qq.setzSkalierung(scalw, scalw, scalw);
-            this.om.erzeugeObject(CONE, "main", qq , new Vektor4(zufallsZahl(-1000, 1000), scalw, zufallsZahl(-1000, 1000), 1.0f), toon);
+            this.om.erzeugeObject(CONE, "main", qq , new Vektor4(zufallsZahl(-6000, 6000), scalw, zufallsZahl(-6000, 6000), 1.0f), toon);
             //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 20f, 1.0f), this.sbS);
             //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(20f, 0f, 0f, 1.0f), this.sbS);
             //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(0f, 0f, 20f, 1.0f), this.sbS);

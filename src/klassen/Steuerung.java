@@ -100,14 +100,12 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
             this.zoomLevel += 0.5;
         }
         
-        System.out.println("Level B: " + this.zoomLevel);
         if (this.zoomLevel <= 1.5f) {
             this.zoomLevel = 1.5f;
         } else if (this.zoomLevel >= 20.0f) {
             this.zoomLevel = 20.0f;
         }
         float level = 8f * ((75.0f / Configuration.holSichtfeld())) * this.zoomLevel;
-        System.out.println("Zoom dir: " + this.zoomAnsicht + " Zoom: " + this.zoomLevel+ " Level: " + level);
         Vektor4 vor = new Vektor4(0f, level / 10f, level, 1);
         spielerV = spielerV.addiereV4(vor);
         this.kamera.setzStandort(spielerV);
@@ -225,7 +223,6 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        System.out.println("Wheel: " + e.getWheelRotation());
         this.zoomAnsicht = e.getWheelRotation();
     }
 

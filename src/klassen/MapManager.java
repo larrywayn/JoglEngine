@@ -7,6 +7,7 @@ package klassen;
 
 import com.jogamp.opengl.GL4;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import klassen.geometrie.Flex;
@@ -22,8 +23,8 @@ public class MapManager {
     private int tmpTextur;
     private static int aid;
     private Random zufallsGenerator;
-    private final TreeMap<String, Double> welt;
-    private final int width;
+    private final TreeMap<String, float[]> welt;
+    private int width;
 
     public MapManager(GL4 gl, FrameRenderBufferManager fbm) {
         this.gl = gl;
@@ -34,8 +35,8 @@ public class MapManager {
         this.tmpTextur = fbm.erzeugeAbedoTextur(this.width, this.width);
     }
 
-    private float zufallsZahl(int min, int max) {
-        return zufallsGenerator.nextInt((max - min) + 1) + min;
+    private float zufallsZahl(float min, float max) {
+        return min + (max - min) * this.zufallsGenerator.nextFloat(); //zufallsGenerator.nextInt((max - min) + 1) + min;
     }
 
     private static double Noise(int seed, int x, int y, int octaves, int amplitude, double frequency, double persistence) {
@@ -98,12 +99,74 @@ public class MapManager {
     private void ermittelHoehe() {
     }
 
-    private double ermittelWasserLand(int posx, int posy, ArrayList<ArrayList<Double>> map, double wasserNebenWasser, double landNebenLand, double land) {
+    private float[] ermittelWasserLand(int posx, int posy, ArrayList<ArrayList<float[]>> map, double wasserNebenWasser, double landNebenLand, double land, float offset) {
+        //16
+        //System.out.println("");
+        //System.out.println("x:" + posx + " y:" + posy);
+        //   System.out.println("x,y " + posx + " " + posy);
+        float[] data = new float[4];
         //  ArrayList<Double> mapdata = map.get(posx);
-        double wl = zufallsZahl(0, 1);
-        double ergebnis = (wl < land) ? 1 : -1;
+        float w1 = this.zufallsZahl(-12.0f, 12.0f);
+        float w2 = this.zufallsZahl(-12.0f, 12.0f);
+        float w3 = this.zufallsZahl(-12.0f, 12.0f);
+        float w4 = this.zufallsZahl(-12.0f, 12.0f);
+        //   double ergebnis = (wl < land) ? 1 : -1;
         //   mapdata.set(posy, ergebnis);
-        return ergebnis;
+
+        float[] linkerfaktor = null;
+        float[] obererefaktor = null;
+        float[] olfaktor = null;
+
+        //links
+        if (posy - 1 >= 0) {
+            ArrayList<float[]> tmpmap = map.get((posx));
+            float[] dataf = tmpmap.get((posy - 1));
+            //System.out.println("FDATA Y 0: " + dataf[0] + " 1: " + dataf[1] + " 2: " + dataf[2] + " 3: " + dataf[3]);
+            linkerfaktor = new float[1];
+            linkerfaktor[0] = dataf[3];
+            olfaktor = new float[1];
+            olfaktor[0] = dataf[1];
+        }
+        //oben
+        if (posx - 1 >= 0) {
+            ArrayList<float[]> tmpmap = map.get((posx - 1));
+            float[] dataf = tmpmap.get((posy));
+            obererefaktor = new float[1];
+            obererefaktor[0] = dataf[3];
+            //System.out.println("FDATA X 0: " + dataf[0] + " 1: " + dataf[1] + " 2: " + dataf[2] + " 3: " + dataf[3]);
+            if (olfaktor == null) {
+                olfaktor = new float[1];
+                olfaktor[0] = dataf[2];
+            }
+        }
+        if (linkerfaktor == null) {
+            linkerfaktor = new float[1];
+            linkerfaktor[0] = w1;
+        }
+        if (obererefaktor == null) {
+            obererefaktor = new float[1];
+            obererefaktor[0] = w2;
+        }
+        if (olfaktor == null) {
+            olfaktor = new float[1];
+            olfaktor[0] = w3;
+        }
+
+        //ol
+        data[0] = olfaktor[0];//
+        
+        //or
+        data[1] = obererefaktor[0];//
+        
+        //ul
+        data[2] = linkerfaktor[0];//
+        
+        //ur
+        data[3] = w4;
+
+        //System.out.println("0: " + data[0] + " 1: " + data[1] + " 2: " + data[2] + " 3: " + data[3]);
+        //System.out.println("old l: " + linkerfaktor[0] + " o: " + obererefaktor[0] + " ol: " + olfaktor[0]);
+        return data;
     }
 
     public Flex createMap(GeometrieManager gm, String seed) {
@@ -113,38 +176,40 @@ public class MapManager {
         double wasserNebenWasser = 0.7;
         double landNebenLand = 0.9;
         double land = 0.8;
-        double persistence = 10;
+        int persistence = 40;
+        this.width = 200;
         double wasserHoehe = 0.3;
 
         float[] verticesPlain = new float[(this.width * this.width * 3 * 4) + 1];
         int[] indiciesPlain = new int[(this.width * this.width * 3 * 2) + 1];
 
-        int korx = (this.width / 2);
-        int kory = (this.width / 2);
+        int korx = -(this.width/2)*persistence;
+        int kory = -(this.width/2)*persistence;
         int counter = 0;
         int counter2 = 0;
         int counter3 = -1;
-        ArrayList<ArrayList<Double>> map = new ArrayList<>();
+        ArrayList<ArrayList<float[]>> map = new ArrayList<>();
         for (int x = 0; x < this.width; ++x) {
-            ArrayList<Double> mapdata = new ArrayList<>();
-            kory = (this.width / 2);
+            ArrayList<float[]> mapdata = new ArrayList<>();
+            map.add(mapdata);
+            korx = -(this.width / 2)*10;
             for (int y = 0; y < this.width; ++y) {
-                float npos = (float) ermittelWasserLand(x, y, map, wasserNebenWasser, landNebenLand, land)-1.8f;
+                float[] npos = ermittelWasserLand(x, y, map, wasserNebenWasser, landNebenLand, land, this.width);
                 verticesPlain[counter++] = korx;
-                verticesPlain[counter++] = npos;
-                verticesPlain[counter++] = kory - 1;
+                verticesPlain[counter++] = npos[2];
+                verticesPlain[counter++] = kory + (persistence*2);
                 ++counter3;
                 verticesPlain[counter++] = korx;
-                verticesPlain[counter++] = npos;
+                verticesPlain[counter++] = npos[0];
                 verticesPlain[counter++] = kory;
                 ++counter3;
-                verticesPlain[counter++] = korx - 1;
-                verticesPlain[counter++] = npos;
+                verticesPlain[counter++] = korx + (persistence*2);
+                verticesPlain[counter++] = npos[1];
                 verticesPlain[counter++] = kory;
                 ++counter3;
-                verticesPlain[counter++] = korx - 1;
-                verticesPlain[counter++] = npos;
-                verticesPlain[counter++] = kory - 1;
+                verticesPlain[counter++] = korx + (persistence*2);
+                verticesPlain[counter++] = npos[3];
+                verticesPlain[counter++] = kory + (persistence*2);
                 ++counter3;
 
                 indiciesPlain[counter2++] = counter3 - 3;
@@ -153,11 +218,11 @@ public class MapManager {
                 indiciesPlain[counter2++] = counter3 - 3;
                 indiciesPlain[counter2++] = counter3 - 1;
                 indiciesPlain[counter2++] = counter3;
-
-                --kory;
+                mapdata.add(npos);
+                korx+=(persistence*2);
             }
-            --korx;
-            map.add(mapdata);
+            kory+=(persistence*2);
+
         }
         return new Flex(gm, verticesPlain, indiciesPlain);
     }
