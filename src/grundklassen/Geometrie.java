@@ -3,12 +3,12 @@ package grundklassen;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.util.texture.Texture;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import klassen.Configuration;
 import klassen.GeometrieManager;
+import klassen.Textur; 
 
 public class Geometrie implements Runnable {
 
@@ -28,9 +28,8 @@ public class Geometrie implements Runnable {
     protected int geomID;
     protected int normalen;
     protected int indicies;
-    protected Texture textur;
+    protected Textur textur;
     protected int texturID;
-    protected int AA;
     protected boolean istGeladen;
     protected boolean istLadbar;
     protected String dateipfad;
@@ -117,12 +116,11 @@ public class Geometrie implements Runnable {
         return this.texturname;
     }
 
-    public void setzTextur(Texture textur) {
-        this.AA = 33;
+    public void setzTextur(Textur textur) {
         this.textur = textur;
     }
 
-    public Texture holTextur() {
+    public Textur holTextur() {
         return this.textur;
     }
 

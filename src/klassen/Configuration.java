@@ -11,9 +11,14 @@ public class Configuration {
     private final static int framerate = 120;
     private final static String texturPfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\texturen\\";
     private final static String geometriePfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\meshes\\";
+    private final static String fontTexturPfad = "C:\\Users\\larry\\Documents\\Projekte\\JoglEngine\\src\\resource\\font\\";
 
     public static String holGeometriePfad() {
         return geometriePfad;
+    }
+
+    static String holFontTexturPfad() {
+        return fontTexturPfad;
     }
 
     protected Configuration() {

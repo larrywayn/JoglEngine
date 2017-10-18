@@ -191,23 +191,23 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
     private void checkeKeyEingaben(int key, boolean startstop) {
         switch (key) {
             case KeyEvent.VK_W:
-                System.out.println("do w");
+                //System.out.println("do w");
                 this.bewegeVorwaerts = startstop;
                 break;
             case KeyEvent.VK_S:
-                System.out.println("do s");
+               // System.out.println("do s");
                 this.bewegeRueckwaerts = startstop;
                 break;
             case KeyEvent.VK_A:
-                System.out.println("do a");
+               // System.out.println("do a");
                 this.bewegeLinks = startstop;
                 break;
             case KeyEvent.VK_D:
-                System.out.println("do d");
+              //  System.out.println("do d");
                 this.bewegeRechts = startstop;
                 break;
             case KeyEvent.VK_SHIFT:
-                System.out.println("do shift");
+              //  System.out.println("do shift");
                 this.beschleunigeSpieler = startstop;
                 break;
             default:

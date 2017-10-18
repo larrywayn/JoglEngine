@@ -86,7 +86,7 @@ public class Spieler extends Objekt3D {
     }
 
     public void bewegeSchneller() {
-        this.faktorX = 1.5f;
+        this.faktorX = 7.5f;
         this.faktorY = 0.6f;
     }
 }

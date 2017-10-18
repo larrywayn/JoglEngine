@@ -6,6 +6,7 @@
 package klassen;
 
 import com.jogamp.opengl.util.texture.Texture;
+import grundklassen.TexturTyp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,28 +18,32 @@ import javax.imageio.ImageIO;
  */
 public class Textur implements Runnable {
 
-    private int texturID;
-    private Texture textur;
-    private BufferedImage origIMG;
-    private String dateipfad;
-    private boolean istGeladen;
-    private TexturManager tm;
-    private int objektID;
+    protected int texturID;
+    protected Texture textur;
+    protected BufferedImage origIMG;
+    protected String dateipfad;
+    protected boolean istGeladen;
+    protected TexturManager tm;
+    protected int objektID;
+    protected File texturFile;
+    protected TexturTyp texturTyp;
+    protected String texturPfad;
 
-    public Textur(String dateipfad, TexturManager tm, int objektID) {
+    public Textur(String dateipfad, TexturManager tm, TexturTyp texturTyp, int objektID) {
         this.istGeladen = false;
+        this.texturPfad = Configuration.holTexturPfad();
         this.dateipfad = dateipfad;
         this.tm = tm;
+        this.texturTyp = texturTyp;
         this.objektID = objektID;
     }
 
-    private synchronized void ladeBildDaten() {
+    protected synchronized void ladeBildDaten() {
         try {
-            System.out.println("Pfad: "+(Configuration.holTexturPfad()+dateipfad));
-            File file = new File(Configuration.holTexturPfad()+dateipfad);
-            if(file.exists()){
-                System.out.println("Ergebnis:"+file.toString());
-                this.origIMG = ImageIO.read(file);
+            System.out.println("Pfad: "+(this.texturPfad+dateipfad));
+            this.texturFile = new File(this.texturPfad+dateipfad);
+            if(this.texturFile.exists()){
+                this.origIMG = ImageIO.read(this.texturFile);
                 this.istGeladen = true;
                 tm.speichereTextur(this);
             }
@@ -68,5 +73,13 @@ public class Textur implements Runnable {
 
     public BufferedImage holImage() {
         return this.origIMG;
+    }
+
+    void setzTextur(Texture textur) {
+       this.textur = textur;
+    }
+
+    File holFile() {
+        return texturFile;
     }
 }

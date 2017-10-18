@@ -7,7 +7,6 @@ package klassen;
 
 import com.jogamp.opengl.GL4;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import klassen.geometrie.Flex;
@@ -35,7 +34,7 @@ public class MapManager {
         this.tmpTextur = fbm.erzeugeAbedoTextur(this.width, this.width);
     }
 
-    private float zufallsZahl(float min, float max) {
+    public float zufallsZahl(float min, float max) {
         return min + (max - min) * this.zufallsGenerator.nextFloat(); //zufallsGenerator.nextInt((max - min) + 1) + min;
     }
 
@@ -106,10 +105,10 @@ public class MapManager {
         //   System.out.println("x,y " + posx + " " + posy);
         float[] data = new float[4];
         //  ArrayList<Double> mapdata = map.get(posx);
-        float w1 = this.zufallsZahl(-12.0f, 12.0f);
-        float w2 = this.zufallsZahl(-12.0f, 12.0f);
-        float w3 = this.zufallsZahl(-12.0f, 12.0f);
-        float w4 = this.zufallsZahl(-12.0f, 12.0f);
+        float w1 = this.zufallsZahl(-40.0f, 40.0f);
+        float w2 = this.zufallsZahl(-40.0f, 40.0f);
+        float w3 = this.zufallsZahl(-40.0f, 40.0f);
+        float w4 = this.zufallsZahl(-40.0f, 40.0f);
         //   double ergebnis = (wl < land) ? 1 : -1;
         //   mapdata.set(posy, ergebnis);
 
@@ -183,8 +182,8 @@ public class MapManager {
         float[] verticesPlain = new float[(this.width * this.width * 3 * 4) + 1];
         int[] indiciesPlain = new int[(this.width * this.width * 3 * 2) + 1];
 
-        int korx = -(this.width/2)*persistence;
-        int kory = -(this.width/2)*persistence;
+        int korx = -(this.width/2)*persistence*2;
+        int kory = -(this.width/2)*persistence*2;
         int counter = 0;
         int counter2 = 0;
         int counter3 = -1;
@@ -192,7 +191,7 @@ public class MapManager {
         for (int x = 0; x < this.width; ++x) {
             ArrayList<float[]> mapdata = new ArrayList<>();
             map.add(mapdata);
-            korx = -(this.width / 2)*10;
+            korx = -(this.width/2)*persistence*2;
             for (int y = 0; y < this.width; ++y) {
                 float[] npos = ermittelWasserLand(x, y, map, wasserNebenWasser, landNebenLand, land, this.width);
                 verticesPlain[counter++] = korx;

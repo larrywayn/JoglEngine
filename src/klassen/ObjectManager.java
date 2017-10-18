@@ -76,13 +76,13 @@ public class ObjectManager {
         }
     }
 
-    public void erzeugeObject(GeometrieTypen geometrieTypen, String listname) {
+    public Objekt3D erzeugeObject(GeometrieTypen geometrieTypen, String listname) {
         Quaternion q = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
         Vektor4 v = new Vektor4(0f, 0f, 0f, 1.0f);
-        this.erzeugeObject(CONE, listname, q, v, this.standardShader);
+        return this.erzeugeObject(CONE, listname, q, v, this.standardShader);
     }
 
-    public void erzeugeObject(GeometrieTypen geometrieTyp, String listname, Quaternion quaternion, Vektor4 vektor4, ShaderBlock shaderBlock) {
+    public Objekt3D erzeugeObject(GeometrieTypen geometrieTyp, String listname, Quaternion quaternion, Vektor4 vektor4, ShaderBlock shaderBlock) {
         if (drawlist.containsKey(listname)) {
             ConcurrentHashMap<String, DrawObjekt> objektlist = this.holObjectListe(listname);
             Objekt3D tmpO = new Objekt3D();
@@ -91,11 +91,13 @@ public class ObjectManager {
             tmpO.setzStandort(vektor4);
             tmpO.setzAusrichtung(quaternion);
             objektlist.put(("Object" + (++ObjectManager.aid)), tmpO);
+            return tmpO;
         }
+        return null;
     }
 
-    public void erzeugeObject(Geometrie f, String listname, Quaternion quaternion, Vektor4 vektor4, ShaderBlock shaderBlock) {
-         if (drawlist.containsKey(listname)) {
+    public Objekt3D erzeugeObject(Geometrie f, String listname, Quaternion quaternion, Vektor4 vektor4, ShaderBlock shaderBlock) {
+        if (drawlist.containsKey(listname)) {
             ConcurrentHashMap<String, DrawObjekt> objektlist = this.holObjectListe(listname);
             Objekt3D tmpO = new Objekt3D();
             tmpO.setzShader(shaderBlock);
@@ -103,6 +105,8 @@ public class ObjectManager {
             tmpO.setzStandort(vektor4);
             tmpO.setzAusrichtung(quaternion);
             objektlist.put(("Object" + (++ObjectManager.aid)), tmpO);
+            return tmpO;
         }
+        return null;
     }
 }
