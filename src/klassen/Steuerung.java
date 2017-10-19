@@ -115,7 +115,7 @@ public class Steuerung implements KeyListener, MouseListener, MouseMotionListene
         this.bewegeRechts = false;
         this.rotX = 0;
         this.zoomAnsicht = 0;
-        this.spieler.bewegeNormal();
+        this.spieler.bewegeNormal(this.beschleunigeSpieler);
     }
 
     protected int[] relativeMousePosition(int mouseXScreen, int mouseYScreen) {

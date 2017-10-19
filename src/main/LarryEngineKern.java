@@ -54,6 +54,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     private ShaderBlock sbO;
     private long lastFrameTime;
     private int aktuelleFPS;
+    private int aktuelleDreiecke;
     private int aktuelleFrameAnzahl;
     private GUIManager im;
 
@@ -85,6 +86,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         gl.glBindTexture(GL_TEXTURE_2D, sceneOverlay.holTexturID());
         gl.glUniform1i((gl.glGetUniformLocation(this.sb.holProgram(), "texture1")), 1);
         gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, framebufferQuad.holIndizies());
+        this.aktuelleDreiecke += (framebufferQuad.holIndiziesPlain().length / 3);
         gl.glDrawElements(GL4.GL_TRIANGLES, framebufferQuad.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
         gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -95,7 +97,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     }
 
     private void drawSceneOrthogonal(GL4 gl, Framebuffer scene3D, String objektListe) {
-        this.steuerung.aktualisiereKamera();
         gl.glBindFramebuffer(GL_FRAMEBUFFER, scene3D.holFramebufferID());
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glViewport(0, 0, this.width, this.height);
@@ -155,6 +156,7 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         //gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "camMat")), 1, false, this.kamera.holMatrix(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "modelMat")), 1, false, matrix, 0);
                         if (mesh.hatIndizies()) {
+                            this.aktuelleDreiecke += (mesh.holIndiziesPlain().length / 3);
                             gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.holIndizies());
                             gl.glDrawElements(GL_TRIANGLES, mesh.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
                         }
@@ -179,8 +181,6 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
     }
 
     private void drawScenePerspektive(GL4 gl, Framebuffer scene3D, String objektListe) {
-        this.steuerung.aktualisiereKamera();
-
         gl.glBindFramebuffer(GL_FRAMEBUFFER, scene3D.holFramebufferID());
         gl.glClearColor(0.2f, 0.7f, 0.8f, 1.0f);
         //   gl.glClearDepth(1.0f);
@@ -195,15 +195,21 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         Map mp = this.om.holObjectListe(objektListe);
         if (mp != null) {
             Iterator it = mp.entrySet().iterator();
+            Objekt3D oo = null;
+            Geometrie mesh = null;
+            float[] matrix = null;
+            int program = -1;
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
-                Objekt3D oo = (Objekt3D) pair.getValue();
+                oo = (Objekt3D) pair.getValue();
                 if (oo != null) {
-                    Geometrie mesh = oo.holMesh();
+                    mesh = oo.holMesh();
                     if (mesh != null) {
-                        float[] matrix = oo.holAusrichtung().erzeugeMatrix(oo.holStandort());
-                        int program = oo.holShader().holProgram();
-                        gl.glUseProgram(program);
+                        matrix = oo.holAusrichtung().erzeugeMatrix(oo.holStandort());
+                        if (program != oo.holShader().holProgram()) {
+                            program = oo.holShader().holProgram();
+                            gl.glUseProgram(program);
+                        }
                         if (mesh.hatVertices()) {
                             gl.glEnableVertexAttribArray(0);
                             gl.glBindBuffer(GL_ARRAY_BUFFER, mesh.holVertices());
@@ -240,9 +246,10 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "projMat")), 1, false, this.kamera.holPerspektive(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "camMat")), 1, false, this.kamera.holMatrix(), 0);
                         gl.glUniformMatrix4fv((gl.glGetUniformLocation(program, "modelMat")), 1, false, matrix, 0);
-                        gl.glUniform1f((gl.glGetUniformLocation(program, "zufall")), this.mm.zufallsZahl(0.48f, 0.58f));
+                        //gl.glUniform1f((gl.glGetUniformLocation(program, "zufall")), this.mm.zufallsZahl(0.48f, 0.58f));
                         if (mesh.hatIndizies()) {
                             gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.holIndizies());
+                            this.aktuelleDreiecke += (mesh.holIndiziesPlain().length / 3);
                             gl.glDrawElements(GL_TRIANGLES, mesh.holIndiziesPlain().length, GL_UNSIGNED_INT, 0);
                             gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
                         }
@@ -256,27 +263,33 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
                             gl.glDisable(GL_TEXTURE_2D);
                             gl.glDisableVertexAttribArray(2);
                         }
-                        gl.glUseProgram(0);
+
                     }
                 }
             }
+            gl.glUseProgram(0);
         }
         gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
-               
+        this.aktuelleDreiecke = 0;
         Framebuffer fbm = this.frm.holBuffer("Hauptbuffer");
         Framebuffer fbo = this.frm.holBuffer("Overlay");
-        this.berechneFramerate(); 
-        this.im.anpassenLabel("lbl_2", "FPS: "+String.valueOf(this.aktuelleFPS));
+        this.berechneFramerate();
+        this.steuerung.aktualisiereKamera();
+        this.im.anpassenLabel("lbl_2", "FPS: " + String.valueOf(this.aktuelleFPS));
+
         this.gl = drawable.getGL().getGL4();
         this.tm.legeTexturenAn();
         this.drawScenePerspektive(this.gl, fbm, "main");
         this.drawSceneOrthogonal(this.gl, fbo, "overlay");
         this.im.drawText(this.gl, fbo, this.sbO, this.width, this.height);
         this.drawFinalScene(this.gl, fbm, fbo);
+        this.im.anpassenLabel("lbl_3", "Triangles: " + String.valueOf(this.aktuelleDreiecke));
+        String sx = "Ausdauer: " + String.valueOf(Math.round(this.spieler.holAusdauer() * 100.0f) / 100.0f);
+        this.im.anpassenLabel("lbl_4", sx);
     }
 
     @Override
@@ -341,9 +354,9 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
         Textur texN = tm.ladeTextur(this.mainCone);
         this.mainCone.setzTextur(texN);
 
-        Flex f = this.mm.createMap(this.gm, "PENIS");
+        Flex f = this.mm.createMap(this.gm, "Zufallsmap");
         Quaternion g = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-        g.setzSkalierung(30f, 3f, 30f);
+        g.setzSkalierung(15f, 15f, 15f);
         this.om.erzeugeObject(f, "main", g, new Vektor4(0, 0, 0, 1.0f), terrain);
 
         for (int i = 10000; i >= 0; --i) {
@@ -358,12 +371,16 @@ public class LarryEngineKern extends GLJPanel implements GLEventListener {
             //this.om.erzeugeObject(CONE, "main", new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vektor4(10f, 0f, 20f, 1.0f), this.sbS);
         }
 
-        this.im.loadFont("font_new");
-        this.im.erzeugeLabel("lbl_1", "Das ist ein Test", 0, 0, "font_new", 16);
-           this.im.erzeugeLabel("lbl_2", "FPS: "+String.valueOf(this.aktuelleFPS), 0, this.height-2*12, "font_new", 12);      
         this.spieler = new Spieler();
         this.spieler.setzMesh(this.gm.erzeuge(DICE));
         this.spieler.setzShader(sbS);
+
+        this.im.loadFont("font_new");
+        this.im.erzeugeLabel("lbl_1", "Das ist ein Test", 0, 0, "font_new", 16);
+        this.im.erzeugeLabel("lbl_2", "FPS: " + String.valueOf(this.aktuelleFPS), 0, this.height - 2 * 12, "font_new", 12);
+        this.im.erzeugeLabel("lbl_3", "Triangles: " + String.valueOf(this.aktuelleDreiecke), 0, this.height - 4 * 12, "font_new", 12);
+        String sx = "Ausdauer: " + String.valueOf(Math.round(this.spieler.holAusdauer() * 100.0f) / 100.0f);
+        this.im.erzeugeLabel("lbl_4", sx, this.width - (sx.length() * 13), this.height - 2 * 12, "font_new", 12);
 
         this.om.hinzufuegenObject(this.spieler, "main");
 

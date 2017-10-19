@@ -34,15 +34,17 @@ vec4 base;
            base = vec4(vec3(colorT.rgb),1.0f);
        }else{
         float height = fragPosition.y;
-        if (height < -40.0f)
+        if (height < -450.0f)
 		base =  vec4(0.219, 0.164, 0.141,1.0);
-        else if (height < -30.0f)
+        else if (height < -350.0f)
 		base =  vec4(0.517, 0.305, 0.164,1.0);
-	else if (height < 20.0f)
+        else if (height < -200.0f)
+		base =  vec4(0.421, 0.427, 0.181,1.0);
+	else if (height < 0.0f)
 		base =  vec4(0.321, 0.427, 0.211,1.0);
-	else if (height < 30.0f)
+	else if (height < 350.0f)
 		base =  vec4(0.321, 0.376, 0.345,1.0);
-	else if (height < 60.0f)
+	else if (height < 500.0f)
 		base =  vec4(0.388, 0.388, 0.388,1.0); 
 	else
 		base = vec4(0.847, 0.921, 0.933,1.0);
